@@ -1,0 +1,24 @@
+name: Daily content pipeline
+
+# 플랫폼 무관 자동화: 매일 배포된 사이트의 /api/cron 을 호출한다.
+# (Vercel 사용 시에는 vercel.json 의 crons 로 대체 가능 — 둘 중 하나만 쓰면 됨)
+# 필요한 리포지토리 Secrets: APP_URL(예: https://example.com), CRON_SECRET
+on:
+  schedule:
+    - cron: "0 21 * * *" # UTC 21:00 = KST 06:00
+  workflow_dispatch: {} # 수동 실행 허용
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call cron endpoint
+        run: |
+          if [ -z "${{ secrets.APP_URL }}" ] || [ -z "${{ secrets.CRON_SECRET }}" ]; then
+            echo "APP_URL / CRON_SECRET secret 미설정 — 건너뜀"; exit 0
+          fi
+          code=$(curl -s -o /tmp/out.json -w "%{http_code}" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            "${{ secrets.APP_URL }}/api/cron")
+          echo "HTTP $code"; cat /tmp/out.json || true
+          test "$code" = "200"

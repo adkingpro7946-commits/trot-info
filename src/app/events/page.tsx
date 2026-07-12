@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { prisma } from '@/lib/db';
+import { prisma, safe } from '@/lib/db';
 import { buildMetadata } from '@/lib/seo';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { EventCard } from '@/components/cards';
@@ -16,11 +16,11 @@ export const metadata: Metadata = buildMetadata({
 
 export default async function EventsPage() {
   const now = new Date();
-  const events = await prisma.event.findMany({
+  const events = await safe(prisma.event.findMany({
     where: { status: 'published' },
     include: { artists: { select: { stageName: true } } },
     orderBy: { startDateTime: 'asc' },
-  });
+  }), []);
   const upcoming = events.filter((e) => e.startDateTime >= now && !['cancelled', 'completed'].includes(e.eventStatus));
   const others = events.filter((e) => !upcoming.includes(e));
 

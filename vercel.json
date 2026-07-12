@@ -1,0 +1,13 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "DATABASE_PROVIDER=postgresql node scripts/set-db-provider.mjs && prisma generate && prisma db push --accept-data-loss && next build",
+  "crons": [
+    {
+      "path": "/api/cron",
+      "schedule": "0 21 * * *"
+    }
+  ],
+  "functions": {
+    "src/app/api/cron/route.ts": { "maxDuration": 60 }
+  }
+}

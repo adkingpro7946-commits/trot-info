@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/db';
+import { prisma, safe } from '@/lib/db';
 import { SITE_NAME, SITE_URL, abs } from '@/lib/seo';
 
 export const runtime = 'nodejs';
@@ -10,12 +10,12 @@ function esc(s: string) {
 
 // 최신 소식 RSS (§19). 발행/주요 수정 시 revalidate로 갱신.
 export async function GET() {
-  const items = await prisma.article.findMany({
+  const items = await safe(prisma.article.findMany({
     where: { status: 'published', index: true },
     orderBy: { publishedAt: 'desc' },
     take: 30,
     select: { slug: true, title: true, description: true, publishedAt: true },
-  });
+  }), []);
 
   const body = items
     .map((a) => {

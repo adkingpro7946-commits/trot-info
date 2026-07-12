@@ -10,10 +10,12 @@
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "postinstall": "prisma generate",
+    "db:provider": "node scripts/set-db-provider.mjs",
     "db:migrate": "prisma migrate dev",
     "db:push": "prisma db push",
     "db:seed": "tsx prisma/seed.ts",
-    "db:reset": "prisma migrate reset --force"
+    "db:reset": "prisma migrate reset --force",
+    "bootstrap:admin": "node scripts/bootstrap-admin.mjs"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

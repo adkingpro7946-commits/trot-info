@@ -1,5 +1,5 @@
 // 사이트맵 항목 수집 (§19) — 공개 + index=true + 본문 존재 페이지만
-import { prisma } from './db';
+import { prisma, safe } from './db';
 import { abs, SITE_URL } from './seo';
 import { REGIONS } from './enums';
 
@@ -29,7 +29,7 @@ export async function staticUrls(): Promise<UrlEntry[]> {
 }
 
 export async function artistUrls(): Promise<UrlEntry[]> {
-  const artists = await prisma.artist.findMany({ where: { status: 'published' }, select: { slug: true, updatedAt: true } });
+  const artists = await safe(prisma.artist.findMany({ where: { status: 'published' }, select: { slug: true, updatedAt: true } }), []);
   return artists.flatMap((a) => [
     { loc: abs(`/artists/${a.slug}`), lastmod: iso(a.updatedAt), changefreq: 'weekly', priority: 0.7 },
     { loc: abs(`/artists/${a.slug}/timeline`), changefreq: 'monthly', priority: 0.4 },
@@ -39,20 +39,20 @@ export async function artistUrls(): Promise<UrlEntry[]> {
 }
 
 export async function newsUrls(): Promise<UrlEntry[]> {
-  const arts = await prisma.article.findMany({
+  const arts = await safe(prisma.article.findMany({
     where: { status: 'published', index: true },
     select: { slug: true, updatedAt: true },
-  });
+  }), []);
   return arts.map((a) => ({ loc: abs(`/news/${a.slug}`), lastmod: iso(a.updatedAt), changefreq: 'weekly', priority: 0.6 }));
 }
 
 export async function eventUrls(): Promise<UrlEntry[]> {
-  const evs = await prisma.event.findMany({ where: { status: 'published' }, select: { slug: true, lastUpdatedAt: true } });
+  const evs = await safe(prisma.event.findMany({ where: { status: 'published' }, select: { slug: true, lastUpdatedAt: true } }), []);
   return evs.map((e) => ({ loc: abs(`/events/${e.slug}`), lastmod: iso(e.lastUpdatedAt), changefreq: 'daily', priority: 0.6 }));
 }
 
 export async function musicUrls(): Promise<UrlEntry[]> {
-  const ms = await prisma.music.findMany({ where: { status: 'published' }, select: { slug: true, updatedAt: true } });
+  const ms = await safe(prisma.music.findMany({ where: { status: 'published' }, select: { slug: true, updatedAt: true } }), []);
   return ms.map((m) => ({ loc: abs(`/music/${m.slug}`), lastmod: iso(m.updatedAt), changefreq: 'monthly', priority: 0.5 }));
 }
 

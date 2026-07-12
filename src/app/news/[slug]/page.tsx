@@ -30,8 +30,12 @@ async function getArticle(slug: string) {
 }
 
 export async function generateStaticParams() {
-  const arts = await prisma.article.findMany({ where: { status: 'published' }, select: { slug: true } });
-  return arts.map((a) => ({ slug: a.slug }));
+  try {
+    const arts = await prisma.article.findMany({ where: { status: 'published' }, select: { slug: true } });
+    return arts.map((a) => ({ slug: a.slug }));
+  } catch {
+    return [];
+  }
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { prisma } from '@/lib/db';
+import { prisma, safe } from '@/lib/db';
 import { buildMetadata } from '@/lib/seo';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { EventCard } from '@/components/cards';
@@ -29,11 +29,11 @@ export default async function RegionEventsPage({ params }: { params: Promise<{ r
   if (!REGIONS.some((r) => r.slug === region)) notFound();
   const label = regionLabel(region);
 
-  const events = await prisma.event.findMany({
+  const events = await safe(prisma.event.findMany({
     where: { status: 'published', region },
     include: { artists: { select: { stageName: true } } },
     orderBy: { startDateTime: 'asc' },
-  });
+  }), []);
 
   return (
     <div>

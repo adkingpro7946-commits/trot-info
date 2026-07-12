@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { prisma } from '@/lib/db';
+import { prisma, safe } from '@/lib/db';
 import { buildMetadata } from '@/lib/seo';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { SampleBadge } from '@/components/badges';
@@ -15,11 +15,11 @@ export const metadata: Metadata = buildMetadata({
 });
 
 export default async function MusicIndexPage() {
-  const music = await prisma.music.findMany({
+  const music = await safe(prisma.music.findMany({
     where: { status: 'published' },
     include: { artists: { select: { stageName: true } } },
     orderBy: { releaseDate: 'desc' },
-  });
+  }), []);
   return (
     <div>
       <Breadcrumbs items={[{ name: '홈', path: '/' }, { name: '신곡·앨범', path: '/music' }]} />

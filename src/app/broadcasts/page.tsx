@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { prisma } from '@/lib/db';
+import { prisma, safe } from '@/lib/db';
 import { buildMetadata } from '@/lib/seo';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { EventCard, ArticleCard } from '@/components/cards';
@@ -16,13 +16,13 @@ export const metadata: Metadata = buildMetadata({
 export default async function BroadcastsPage() {
   const now = new Date();
   const [recordings, programs, broadcastArticles] = await Promise.all([
-    prisma.event.findMany({
+    safe(prisma.event.findMany({
       where: { status: 'published', eventType: 'broadcast_recording', startDateTime: { gte: now } },
       include: { artists: { select: { stageName: true } } },
       orderBy: { startDateTime: 'asc' },
-    }),
-    prisma.program.findMany({ where: { status: 'published' }, orderBy: { name: 'asc' } }),
-    prisma.article.findMany({ where: { status: 'published', type: 'broadcast' }, orderBy: { publishedAt: 'desc' }, take: 6 }),
+    }), []),
+    safe(prisma.program.findMany({ where: { status: 'published' }, orderBy: { name: 'asc' } }), []),
+    safe(prisma.article.findMany({ where: { status: 'published', type: 'broadcast' }, orderBy: { publishedAt: 'desc' }, take: 6 }), []),
   ]);
 
   return (

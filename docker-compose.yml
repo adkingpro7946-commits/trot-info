@@ -1,0 +1,59 @@
+# 자체 호스팅용 자동화 스택: Postgres + Next 앱 + 일일 cron 스케줄러(ofelia)
+# 사용: cp .env.example .env  (값 채우기) → docker compose up -d --build
+# 최초 1회 관리자 생성: BOOTSTRAP_ADMIN=true 로 기동하거나 아래 주석 명령 참고.
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-trot}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-trotpass}
+      POSTGRES_DB: ${POSTGRES_DB:-trot}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-trot}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_PROVIDER: postgresql
+      DATABASE_URL: postgresql://${POSTGRES_USER:-trot}:${POSTGRES_PASSWORD:-trotpass}@db:5432/${POSTGRES_DB:-trot}?schema=public
+      SITE_URL: ${SITE_URL:-http://localhost:3000}
+      SITE_NAME: ${SITE_NAME:-트로트 인포}
+      AUTH_SECRET: ${AUTH_SECRET:?AUTH_SECRET 필요}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@example.com}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?ADMIN_PASSWORD 필요}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_IMAGE_MODEL: ${OPENAI_IMAGE_MODEL:-gpt-image-1}
+      CRON_SECRET: ${CRON_SECRET:?CRON_SECRET 필요}
+      AUTO_PUBLISH_ENABLED: ${AUTO_PUBLISH_ENABLED:-false}
+      BOOTSTRAP_ADMIN: ${BOOTSTRAP_ADMIN:-true}
+    ports:
+      - "3000:3000"
+
+  # 일일 콘텐츠 파이프라인 자동 실행 (KST 06:00 = UTC 21:00). ofelia = docker용 cron.
+  cron:
+    image: mcuadros/ofelia:latest
+    restart: unless-stopped
+    depends_on:
+      - app
+    command: daemon --docker
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    labels:
+      ofelia.job-run.daily-pipeline.schedule: "0 0 21 * * *"
+      ofelia.job-run.daily-pipeline.image: "curlimages/curl:latest"
+      ofelia.job-run.daily-pipeline.network: "${COMPOSE_PROJECT_NAME:-트로트가수-블로그-사이트}_default"
+      ofelia.job-run.daily-pipeline.command: "curl -fsS -H 'Authorization: Bearer ${CRON_SECRET}' http://app:3000/api/cron"
+
+volumes:
+  pgdata:

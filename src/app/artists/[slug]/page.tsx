@@ -30,8 +30,12 @@ async function getArtist(slug: string) {
 }
 
 export async function generateStaticParams() {
-  const artists = await prisma.artist.findMany({ where: { status: 'published' }, select: { slug: true } });
-  return artists.map((a) => ({ slug: a.slug }));
+  try {
+    const artists = await prisma.artist.findMany({ where: { status: 'published' }, select: { slug: true } });
+    return artists.map((a) => ({ slug: a.slug }));
+  } catch {
+    return []; // 빌드 시 DB 미접속이어도 통과 (런타임 ISR 렌더)
+  }
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {

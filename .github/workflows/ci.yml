@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      # CI 는 로컬과 동일한 SQLite 로 타입체크/빌드 검증 (배포 DB는 Postgres)
+      DATABASE_PROVIDER: sqlite
+      DATABASE_URL: "file:./dev.db"
+      AUTH_SECRET: "ci-only-secret-abcdefghijklmnopqrstuvwxyz012345"
+      SITE_URL: "http://localhost:3000"
+      CRON_SECRET: "ci-cron"
+      AUTO_PUBLISH_ENABLED: "false"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Prisma generate + DB 준비
+        run: |
+          node scripts/set-db-provider.mjs
+          npx prisma migrate deploy
+      - name: Typecheck
+        run: npx tsc --noEmit
+      - name: Lint
+        run: npx next lint
+      - name: Build
+        run: npm run build

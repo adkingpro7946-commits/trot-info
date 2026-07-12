@@ -20,8 +20,12 @@ async function get(slug: string) {
 }
 
 export async function generateStaticParams() {
-  const ps = await prisma.program.findMany({ where: { status: 'published' }, select: { slug: true } });
-  return ps.map((p) => ({ slug: p.slug }));
+  try {
+    const ps = await prisma.program.findMany({ where: { status: 'published' }, select: { slug: true } });
+    return ps.map((p) => ({ slug: p.slug }));
+  } catch {
+    return [];
+  }
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {

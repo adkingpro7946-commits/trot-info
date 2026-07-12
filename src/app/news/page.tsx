@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { prisma } from '@/lib/db';
+import { prisma, safe } from '@/lib/db';
 import { buildMetadata } from '@/lib/seo';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { ArticleCard } from '@/components/cards';
@@ -18,11 +18,11 @@ export default async function NewsPage({ searchParams }: { searchParams: Promise
   const { type } = await searchParams;
   const validType = type && (ARTICLE_TYPES as readonly string[]).includes(type) ? type : undefined;
 
-  const articles = await prisma.article.findMany({
+  const articles = await safe(prisma.article.findMany({
     where: { status: 'published', ...(validType ? { type: validType } : {}) },
     orderBy: { publishedAt: 'desc' },
     take: 30,
-  });
+  }), []);
 
   return (
     <div>

@@ -2,6 +2,8 @@
 const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  // Docker/self-host 배포용 최소 실행 번들 (docs/deployment.md)
+  output: 'standalone',
   images: {
     formats: ['image/avif', 'image/webp'],
     // 외부 이미지는 명시적으로 허가된 호스트만 허용 (기본은 로컬 생성 이미지)

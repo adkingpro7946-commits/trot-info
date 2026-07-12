@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { prisma } from '@/lib/db';
+import { prisma, safe } from '@/lib/db';
 import { buildMetadata } from '@/lib/seo';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { ArtistCard } from '@/components/cards';
@@ -14,10 +14,10 @@ export const metadata: Metadata = buildMetadata({
 });
 
 export default async function ArtistsPage() {
-  const artists = await prisma.artist.findMany({
+  const artists = await safe(prisma.artist.findMany({
     where: { status: 'published' },
     orderBy: { stageName: 'asc' },
-  });
+  }), []);
 
   return (
     <div>
