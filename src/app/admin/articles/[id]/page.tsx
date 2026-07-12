@@ -2,10 +2,12 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/db';
 import { updateArticle } from '../../actions';
+import { updateArticleRelations } from '../../crud-actions';
 import { WORKFLOW_STATUS, WORKFLOW_STATUS_LABEL } from '@/lib/enums';
 import { scoreQuality, assessRisk } from '@/lib/quality-score';
 import { articleLd } from '@/lib/structured-data';
-import { SourceList } from '@/components/SourceList';
+import { SourcePanel } from '@/components/admin/SourcePanel';
+import { RelationChecks } from '@/components/admin/forms';
 import { formatDateTime } from '@/lib/format';
 import { SITE_NAME } from '@/lib/seo';
 
@@ -17,11 +19,19 @@ export default async function ArticleEditorPage({ params }: { params: Promise<{ 
     where: { id },
     include: {
       artists: true,
+      events: true,
+      music: true,
       sources: true,
       revisions: { orderBy: { changedAt: 'desc' }, take: 10 },
     },
   });
   if (!article) notFound();
+
+  const [allArtists, allEvents, allMusic] = await Promise.all([
+    prisma.artist.findMany({ orderBy: { stageName: 'asc' }, select: { id: true, stageName: true } }),
+    prisma.event.findMany({ orderBy: { startDateTime: 'desc' }, take: 40, select: { id: true, eventName: true } }),
+    prisma.music.findMany({ orderBy: { updatedAt: 'desc' }, take: 40, select: { id: true, title: true } }),
+  ]);
 
   const artistNames = article.artists.map((a) => a.stageName);
   const qInput = {
@@ -134,13 +144,20 @@ export default async function ArticleEditorPage({ params }: { params: Promise<{ 
             <pre className="mt-2 overflow-x-auto rounded bg-slate-50 p-2 text-[10px] text-slate-700">{JSON.stringify(ld, null, 2)}</pre>
           </details>
 
-          {/* 출처 */}
-          <div className="rounded-lg border border-slate-200 p-3">
-            <p className="text-xs font-semibold uppercase text-slate-400">출처 ({article.sources.length})</p>
-            <div className="mt-2"><SourceList sources={article.sources} /></div>
-          </div>
+          {/* 출처 관리 (추가/삭제) */}
+          <SourcePanel ownerType="article" ownerId={article.id} sources={article.sources} />
         </aside>
       </div>
+
+      {/* 관련 콘텐츠 연결 (§14·§16) */}
+      <form action={updateArticleRelations} className="mt-8 space-y-3">
+        <input type="hidden" name="id" value={article.id} />
+        <h2 className="text-sm font-bold text-ink-900">관련 콘텐츠 연결</h2>
+        <RelationChecks label="관련 가수" name="artistIds" all={allArtists.map((a) => ({ id: a.id, label: a.stageName }))} selectedIds={article.artists.map((a) => a.id)} />
+        <RelationChecks label="관련 공연" name="eventIds" all={allEvents.map((e) => ({ id: e.id, label: e.eventName }))} selectedIds={article.events.map((e) => e.id)} />
+        <RelationChecks label="관련 음반" name="musicIds" all={allMusic.map((m) => ({ id: m.id, label: m.title }))} selectedIds={article.music.map((m) => m.id)} />
+        <button type="submit" className="rounded-lg border border-slate-300 px-4 py-1.5 text-sm font-medium text-ink-700 hover:bg-slate-50">연결 저장</button>
+      </form>
 
       {/* 수정 이력 (§18) */}
       {article.revisions.length > 0 && (

@@ -19,7 +19,10 @@ export default async function AdminArticlesPage({ searchParams }: { searchParams
 
   return (
     <div>
-      <h1 className="text-xl font-bold text-ink-900">기사 관리</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-xl font-bold text-ink-900">기사 관리</h1>
+        <Link href="/admin/articles/new" className="rounded-lg bg-brand-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-brand-700">+ 새 기사</Link>
+      </div>
 
       <div className="mt-3 flex flex-wrap gap-2 text-sm">
         <Link href="/admin/articles" className={`rounded-full px-3 py-1 ${!filter ? 'bg-brand-600 text-white' : 'bg-slate-100 text-ink-700'}`}>전체</Link>

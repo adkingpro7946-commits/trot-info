@@ -7,6 +7,9 @@ export const dynamic = 'force-dynamic';
 const NAV = [
   { href: '/admin', label: '대시보드' },
   { href: '/admin/articles', label: '기사' },
+  { href: '/admin/artists', label: '가수' },
+  { href: '/admin/events', label: '공연' },
+  { href: '/admin/music', label: '음반·곡' },
   { href: '/admin/automation', label: '자동화 로그' },
   { href: '/admin/corrections', label: '정정 요청' },
 ];
