@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="트로트 소식 기본 이미지">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fdf2f8"/>
+      <stop offset="1" stop-color="#fce7f3"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#g)"/>
+  <circle cx="600" cy="250" r="90" fill="#db2777" opacity="0.15"/>
+  <rect x="560" y="150" width="80" height="150" rx="40" fill="#be185d"/>
+  <rect x="585" y="300" width="30" height="120" fill="#9d174d"/>
+  <rect x="540" y="418" width="120" height="16" rx="8" fill="#9d174d"/>
+  <text x="600" y="540" text-anchor="middle" font-family="system-ui, sans-serif" font-size="34" fill="#9d174d" font-weight="700">트로트 정보</text>
+</svg>

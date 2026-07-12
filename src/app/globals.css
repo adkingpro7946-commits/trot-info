@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  @apply bg-white text-ink-800 antialiased;
+}
+
+/* 기사 본문(마크다운 렌더) 기본 타이포 */
+.prose-trot h2 {
+  @apply mt-8 mb-3 text-xl font-bold text-ink-900;
+}
+.prose-trot h3 {
+  @apply mt-6 mb-2 text-lg font-semibold text-ink-900;
+}
+.prose-trot p {
+  @apply my-3 leading-7;
+}
+.prose-trot ul {
+  @apply my-3 list-disc pl-5 space-y-1;
+}
+.prose-trot blockquote {
+  @apply my-4 border-l-4 border-brand-500 bg-brand-50 px-4 py-2 text-sm text-ink-700;
+}
+.prose-trot a {
+  @apply text-brand-600 underline underline-offset-2;
+}
+
+a {
+  @apply outline-none;
+}
+:focus-visible {
+  @apply ring-2 ring-brand-500 ring-offset-1 rounded;
+}

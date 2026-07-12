@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="수상·기록 기본 이미지">
+  <rect width="1200" height="630" fill="#422006"/>
+  <circle cx="600" cy="270" r="80" fill="#f59e0b"/>
+  <circle cx="600" cy="270" r="80" fill="none" stroke="#fbbf24" stroke-width="4"/>
+  <path d="M560 340 L540 430 L600 400 L660 430 L640 340 Z" fill="#d97706"/>
+  <text x="600" y="540" text-anchor="middle" font-family="system-ui, sans-serif" font-size="34" fill="#fde68a" font-weight="700">수상 · 기록</text>
+</svg>

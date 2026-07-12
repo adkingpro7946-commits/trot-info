@@ -1,0 +1,290 @@
+// 트로트 정보 플랫폼 데이터 모델 (docs/content-model.md 참고)
+// SQLite 제약: 스칼라 배열/네이티브 enum 미지원 →
+//   - 배열형 필드는 JSON 문자열로 저장하고 코드(@/lib/json)에서 파싱한다.
+//   - enum 성격 필드는 String 으로 두되 허용값을 @/lib/enums 에 상수로 정의한다.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ------------------------------------------------------------------
+// 관리자 계정 (§16, §22)
+// ------------------------------------------------------------------
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  role         String   @default("editor") // admin | editor | reviewer
+  createdAt    DateTime @default(now())
+
+  authoredArticles  Article[] @relation("ArticleAuthor")
+  reviewedArticles  Article[] @relation("ArticleReviewer")
+  activityLogs      AdminActivityLog[]
+}
+
+// ------------------------------------------------------------------
+// 가수 (§4)
+// ------------------------------------------------------------------
+model Artist {
+  id                 String   @id @default(cuid())
+  slug               String   @unique
+  stageName          String
+  realName           String?  // 공식 공개된 경우만
+  profileSummary     String   // 3문장 핵심 소개
+  birthDate          DateTime?
+  birthPlace         String?
+  debutDate          DateTime?
+  agency             String?
+  fanClubName        String?
+  officialWebsite    String?
+  officialSocialLinks String  @default("[]") // JSON: [{label,url}]
+  isSample           Boolean  @default(false) // SAMPLE/DEMO 데이터 표시 (§24)
+  status             String   @default("draft") // draft | review | published | archived
+  lastFactCheckedAt  DateTime?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  awards    Award[]
+  timeline  TimelineEntry[]
+  music     Music[]        @relation("ArtistMusic")
+  events    Event[]        @relation("ArtistEvents")
+  articles  Article[]      @relation("ArticleArtists")
+  programs  Program[]      @relation("ArtistPrograms")
+  sources   Source[]
+}
+
+model Award {
+  id       String  @id @default(cuid())
+  artistId String
+  artist   Artist  @relation(fields: [artistId], references: [id], onDelete: Cascade)
+  year     Int?
+  title    String
+  org      String?
+  sourceUrl String?
+}
+
+model TimelineEntry {
+  id          String   @id @default(cuid())
+  artistId    String
+  artist      Artist   @relation(fields: [artistId], references: [id], onDelete: Cascade)
+  date        DateTime
+  title       String
+  description String?
+  sourceUrl   String?
+}
+
+// ------------------------------------------------------------------
+// 음반 / 곡 (§10, §12: MusicAlbum / MusicRecording)
+// ------------------------------------------------------------------
+model Music {
+  id           String    @id @default(cuid())
+  slug         String    @unique
+  title        String
+  type         String    @default("single") // single | album | ost
+  releaseDate  DateTime?
+  label        String?
+  description  String?
+  trackList    String    @default("[]") // JSON: string[]
+  isSample     Boolean   @default(false)
+  status       String    @default("draft")
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  artists  Artist[]  @relation("ArtistMusic")
+  articles Article[] @relation("ArticleMusic")
+  sources  Source[]
+}
+
+// ------------------------------------------------------------------
+// 프로그램 (방송) (§12: 프로그램별 출연자)
+// ------------------------------------------------------------------
+model Program {
+  id           String   @id @default(cuid())
+  slug         String   @unique
+  name         String
+  broadcaster  String?  // 방송사
+  description  String?
+  airInfo      String?  // 방송 시간 안내
+  isSample     Boolean  @default(false)
+  status       String   @default("draft")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  artists  Artist[]  @relation("ArtistPrograms")
+  articles Article[] @relation("ArticlePrograms")
+}
+
+// ------------------------------------------------------------------
+// 공연 / 행사 (§5)
+// ------------------------------------------------------------------
+model Event {
+  id               String    @id @default(cuid())
+  slug             String    @unique
+  eventName        String
+  eventType        String    @default("concert") // concert | festival | fanmeeting | broadcast_recording
+  startDateTime    DateTime
+  endDateTime      DateTime?
+  venue            String?
+  address          String?
+  region           String?   // region-slug 매핑 (서울/부산 등)
+  ticketVendor     String?
+  ticketUrl        String?
+  ticketOpenDate   DateTime?
+  priceInformation String?
+  ageRestriction   String?
+  organizer        String?
+  officialSourceUrl String?
+  transportInfo    String?
+  // 상태: scheduled | ticket_open | sold_out | cancelled | postponed | completed | verification_needed
+  eventStatus      String    @default("scheduled")
+  cancelledAt      DateTime?
+  rescheduledFrom  DateTime?
+  isSample         Boolean   @default(false)
+  status           String    @default("draft") // 게시 워크플로 상태
+  sourceCheckedAt  DateTime?
+  lastUpdatedAt    DateTime  @updatedAt
+  createdAt        DateTime  @default(now())
+
+  artists  Artist[]  @relation("ArtistEvents")
+  articles Article[] @relation("ArticleEvents")
+  sources  Source[]
+}
+
+// ------------------------------------------------------------------
+// 기사 / 최신 소식 (§6, §10)
+// ------------------------------------------------------------------
+model Article {
+  id               String    @id @default(cuid())
+  type             String    @default("news") // news | release | broadcast | award | announcement | roundup | guide | timeline
+  slug             String    @unique
+  title            String
+  seoTitle         String?
+  description      String    // meta description / 요약
+  excerpt          String?
+  body             String    // Markdown
+  searchIntent     String?
+  primaryKeyword   String?
+  relatedKeywords  String    @default("[]") // JSON string[]
+  categories       String    @default("[]") // JSON string[]
+  tags             String    @default("[]") // JSON string[]
+
+  publishedAt       DateTime?
+  updatedAt         DateTime  @updatedAt
+  createdAt         DateTime  @default(now())
+  lastFactCheckedAt DateTime?
+  nextReviewAt      DateTime?
+  timeSensitive     Boolean   @default(false)
+
+  authorId   String?
+  author     User?    @relation("ArticleAuthor", fields: [authorId], references: [id])
+  reviewerId String?
+  reviewer   User?    @relation("ArticleReviewer", fields: [reviewerId], references: [id])
+
+  heroImage    String?
+  heroImageAlt String?
+  isAiImage    Boolean @default(false) // "이해를 돕기 위해 제작된 이미지" 표기 여부
+
+  // 워크플로 상태: draft | researching | verification_needed | review | scheduled | published | rejected | archived
+  status     String  @default("draft")
+  canonical  String?
+  index      Boolean @default(true)
+  riskLevel  String  @default("low") // low | medium | high (민감주제)
+  qualityScore Int?   // 0-100
+  qualityBreakdown String? // JSON: 항목별 점수 근거 (§20)
+  isSample   Boolean @default(false)
+  autoGenerated Boolean @default(false)
+
+  artists  Artist[]  @relation("ArticleArtists")
+  programs Program[] @relation("ArticlePrograms")
+  events   Event[]   @relation("ArticleEvents")
+  music    Music[]   @relation("ArticleMusic")
+  sources  Source[]
+  revisions RevisionLog[]
+}
+
+// ------------------------------------------------------------------
+// 출처 (§9) — 기사/가수/공연/음반에 연결
+// ------------------------------------------------------------------
+model Source {
+  id                 String   @id @default(cuid())
+  sourceTitle        String
+  sourcePublisher    String?
+  sourceUrl          String
+  publishedAt        DateTime?
+  accessedAt         DateTime @default(now())
+  sourceGrade        String   @default("B") // A | B | C
+  factType           String?  // schedule | release | award | statement ...
+  quotedText         String?  // 짧은 직접 인용만
+  verificationStatus String   @default("unverified") // verified | cross_checked | unverified
+  linkOk             Boolean  @default(true)
+
+  articleId String?
+  article   Article? @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  artistId  String?
+  artist    Artist?  @relation(fields: [artistId], references: [id], onDelete: Cascade)
+  eventId   String?
+  event     Event?   @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  musicId   String?
+  music     Music?   @relation(fields: [musicId], references: [id], onDelete: Cascade)
+}
+
+// ------------------------------------------------------------------
+// 수정 이력 (§18: 무엇이 바뀌었는지 기록)
+// ------------------------------------------------------------------
+model RevisionLog {
+  id        String   @id @default(cuid())
+  articleId String
+  article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  changedAt DateTime @default(now())
+  changedBy String?
+  summary   String   // 어떤 내용이 변경되었는가
+  diff      String?  // JSON: 필드별 before/after
+}
+
+// ------------------------------------------------------------------
+// 정정 요청 (§18)
+// ------------------------------------------------------------------
+model CorrectionRequest {
+  id            String   @id @default(cuid())
+  targetUrl     String
+  proposedFix   String
+  evidenceUrl   String?
+  requesterEmail String?
+  consent       Boolean  @default(false)
+  status        String   @default("open") // open | reviewing | applied | rejected
+  createdAt     DateTime @default(now())
+  handledAt     DateTime?
+  handledNote   String?
+}
+
+// ------------------------------------------------------------------
+// 자동화 로그 (§8-18, §20, §21)
+// ------------------------------------------------------------------
+model AutomationLog {
+  id         String   @id @default(cuid())
+  runAt      DateTime @default(now())
+  stage      String   // collect | detect | dedupe | risk | quality | image | publish | error
+  level      String   @default("info") // info | warn | error
+  message    String
+  refType    String?  // article | event | source
+  refId      String?
+  payload    String?  // JSON 상세
+}
+
+// ------------------------------------------------------------------
+// 관리자 활동 로그 (§22)
+// ------------------------------------------------------------------
+model AdminActivityLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  action    String
+  target    String?
+  createdAt DateTime @default(now())
+}

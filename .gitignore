@@ -1,0 +1,21 @@
+/node_modules
+/.next
+/out
+/build
+next-env.d.ts
+*.tsbuildinfo
+
+# 환경변수 / 비밀키 — 절대 커밋 금지 (§0-15, §11, §22)
+.env
+.env.local
+.env.*.local
+
+# 로컬 SQLite DB
+/prisma/*.db
+/prisma/*.db-journal
+/prisma/dev.db*
+
+# 로그 / OS
+npm-debug.log*
+.DS_Store
+Thumbs.db
