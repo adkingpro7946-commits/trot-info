@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/db';
-import { buildMetadata } from '@/lib/seo';
+import { buildMetadata, defaultHeroFor } from '@/lib/seo';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { JsonLd } from '@/components/JsonLd';
 import { SampleBadge } from '@/components/badges';
@@ -91,14 +91,12 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
         {a.author?.name && <span>작성 {a.author.name}</span>}
       </div>
 
-      {/* 대표 이미지 — 실측 크기 명시 (§11) */}
-      {a.heroImage && (
-        <figure className="mt-5">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={a.heroImage} alt={a.heroImageAlt ?? a.title} width={1200} height={630} className="w-full rounded-xl border border-slate-200" />
-          {a.isAiImage && <figcaption className="mt-1 text-xs text-slate-400">이해를 돕기 위해 제작된 이미지입니다.</figcaption>}
-        </figure>
-      )}
+      {/* 대표 이미지 — 실측 크기 명시 (§11). 없으면 카테고리 기본 그래픽. */}
+      <figure className="mt-5">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={a.heroImage || defaultHeroFor(a.type)} alt={a.heroImageAlt ?? a.title} width={1200} height={630} className="max-h-80 w-full rounded-xl border border-slate-200 object-cover" />
+        {a.isAiImage && <figcaption className="mt-1 text-xs text-slate-400">이해를 돕기 위해 제작된 이미지입니다.</figcaption>}
+      </figure>
 
       {/* 본문 */}
       <div className="prose-trot mt-6 max-w-content" dangerouslySetInnerHTML={{ __html: renderMarkdown(a.body) }} />

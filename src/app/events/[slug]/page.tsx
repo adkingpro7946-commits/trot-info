@@ -6,6 +6,7 @@ import { buildMetadata } from '@/lib/seo';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { JsonLd } from '@/components/JsonLd';
 import { SampleBadge, EventStatusBadge } from '@/components/badges';
+import { Avatar } from '@/components/Avatar';
 import { SourceList } from '@/components/SourceList';
 import { eventLd } from '@/lib/structured-data';
 import { regionLabel } from '@/lib/enums';
@@ -74,11 +75,26 @@ export default async function EventDetailPage({ params }: { params: Promise<{ sl
       {/* 취소/연기 상단 안내 (§5) */}
       {alert && <div className={`mb-4 rounded-lg px-4 py-3 text-sm font-semibold ${alert.cls}`}>{alert.text}</div>}
 
-      <div className="flex flex-wrap items-center gap-2">
-        <EventStatusBadge status={e.eventStatus} />
-        {e.isSample && <SampleBadge />}
+      {/* 무대 배너 (얼굴 사진 아님 — 저작권 안전) */}
+      <div className="relative mb-4 overflow-hidden rounded-2xl">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/img/stage-banner.svg" alt="공연 무대 이미지" width={1200} height={360} className="h-40 w-full object-cover sm:h-52" />
+        <span className="absolute left-3 top-3 flex items-center gap-2">
+          <EventStatusBadge status={e.eventStatus} />
+          {e.isSample && <SampleBadge />}
+        </span>
+        {e.artists.length > 0 && (
+          <span className="absolute bottom-3 left-3 flex items-center gap-2">
+            <span className="flex -space-x-2">
+              {e.artists.map((a) => <Avatar key={a.id} name={a.stageName} size="md" ring />)}
+            </span>
+            <span className="rounded-full bg-black/40 px-2 py-0.5 text-xs font-medium text-white backdrop-blur">
+              {e.artists.map((a) => a.stageName).join(', ')}
+            </span>
+          </span>
+        )}
       </div>
-      <h1 className="mt-2 text-2xl font-extrabold text-ink-900">{e.eventName}</h1>
+      <h1 className="text-2xl font-extrabold text-ink-900">{e.eventName}</h1>
 
       <dl className="mt-5">
         <InfoRow label="일시" value={formatDateTime(e.startDateTime) + (e.endDateTime ? ` ~ ${formatDateTime(e.endDateTime)}` : '')} />

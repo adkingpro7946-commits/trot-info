@@ -6,6 +6,7 @@ import { buildMetadata } from '@/lib/seo';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { JsonLd } from '@/components/JsonLd';
 import { SampleBadge } from '@/components/badges';
+import { Avatar } from '@/components/Avatar';
 import { EventCard, ArticleCard } from '@/components/cards';
 import { SourceList } from '@/components/SourceList';
 import { artistProfileLd } from '@/lib/structured-data';
@@ -88,9 +89,17 @@ export default async function ArtistProfilePage({ params }: { params: Promise<{ 
         })}
       />
 
-      <header className="flex items-center gap-3">
-        <h1 className="text-2xl font-extrabold text-ink-900">{artist.stageName}</h1>
-        {artist.isSample && <SampleBadge />}
+      <header className="flex items-center gap-4">
+        <Avatar name={artist.stageName} size="xl" className="!h-20 !w-20 text-3xl sm:!h-24 sm:!w-24" ring />
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-2">
+            <h1 className="text-2xl font-extrabold text-ink-900">{artist.stageName}</h1>
+            {artist.isSample && <SampleBadge />}
+          </div>
+          <p className="mt-1 text-sm text-slate-500">
+            {[artist.agency, artist.debutDate ? `${formatDate(artist.debutDate)} 데뷔` : null].filter(Boolean).join(' · ')}
+          </p>
+        </div>
       </header>
 
       {/* 첫 화면: 3문장 핵심 소개 + 최근/다음 요약 (§4) */}

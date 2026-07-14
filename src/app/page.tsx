@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { prisma } from '@/lib/db';
 import { SearchBox } from '@/components/SearchBox';
-import { ArticleCard, EventCard, ArtistCard } from '@/components/cards';
+import { ArticleCard, EventCard, ArtistCard, ArtistAvatarLink } from '@/components/cards';
 import { REGIONS } from '@/lib/enums';
 import { formatDate } from '@/lib/format';
 
@@ -60,6 +60,13 @@ export default async function HomePage() {
     }),
   ]);
 
+  const artistStrip = await prisma.artist.findMany({
+    where: { status: 'published' },
+    orderBy: { stageName: 'asc' },
+    take: 14,
+    select: { slug: true, stageName: true },
+  });
+
   // 최신 발행 소식 (오늘 것이 없을 때 대체)
   const latestNews =
     todayNews.length > 0
@@ -89,6 +96,19 @@ export default async function HomePage() {
           <Link href="/events" className="rounded-full bg-white px-3 py-1 text-brand-700 ring-1 ring-brand-200 hover:bg-brand-50">지역별 공연 찾기</Link>
         </div>
       </section>
+
+      {/* 가수 둘러보기 (아바타 스트립) */}
+      {artistStrip.length > 0 && (
+        <section className="mt-8">
+          <div className="mb-3 flex items-baseline justify-between">
+            <h2 className="text-lg font-bold text-ink-900">가수 둘러보기</h2>
+            <Link href="/artists" className="text-sm text-brand-600 hover:underline">전체 보기</Link>
+          </div>
+          <div className="flex gap-3 overflow-x-auto pb-2">
+            {artistStrip.map((a) => <ArtistAvatarLink key={a.slug} artist={a} />)}
+          </div>
+        </section>
+      )}
 
       {/* 2. 오늘의 주요 일정 */}
       <Section title={`오늘의 주요 일정 · ${formatDate(now)}`} href="/events">
