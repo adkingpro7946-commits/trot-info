@@ -10,11 +10,13 @@ function esc(s: string): string {
 }
 
 function inline(s: string): string {
-  // 링크: http/https 만 허용
+  // 링크: 외부(http/https)는 새 창+nofollow, 내부(/로 시작)는 일반 내부 링크(SEO 내부링크)
   let out = esc(s).replace(
-    /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g,
+    /\[([^\]]+)\]\((https?:\/\/[^\s)]+|\/[^\s)]+)\)/g,
     (_m, text: string, url: string) =>
-      `<a href="${url}" target="_blank" rel="noopener noreferrer nofollow">${text}</a>`,
+      /^https?:/.test(url)
+        ? `<a href="${url}" target="_blank" rel="noopener noreferrer nofollow">${text}</a>`
+        : `<a href="${url}">${text}</a>`,
   );
   out = out.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
   return out;
