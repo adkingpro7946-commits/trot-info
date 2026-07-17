@@ -13,6 +13,11 @@ export interface UrlEntry {
 const iso = (d?: Date | null) => (d ? d.toISOString() : undefined);
 
 export async function staticUrls(): Promise<UrlEntry[]> {
+  // 프로그램 상세는 고아 페이지가 되지 않도록 사이트맵에 포함 (§14 고아 페이지 방지)
+  const programs = await safe(
+    prisma.program.findMany({ where: { status: 'published' }, select: { slug: true, updatedAt: true } }),
+    [],
+  );
   return [
     { loc: abs('/'), changefreq: 'daily', priority: 1 },
     { loc: abs('/artists'), changefreq: 'weekly', priority: 0.8 },
@@ -24,6 +29,9 @@ export async function staticUrls(): Promise<UrlEntry[]> {
     // 고유 설명이 있는 지역 페이지만 색인 (§17)
     ...REGIONS.filter((r) => r.slug !== 'other').map((r) => ({
       loc: abs(`/events/region/${r.slug}`), changefreq: 'weekly', priority: 0.5,
+    })),
+    ...programs.map((p) => ({
+      loc: abs(`/programs/${p.slug}`), lastmod: iso(p.updatedAt), changefreq: 'weekly', priority: 0.5,
     })),
   ];
 }
