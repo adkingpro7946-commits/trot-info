@@ -54,7 +54,14 @@ export function buildMetadata(i: PageMetaInput): Metadata {
   };
 }
 
-// 카테고리별 기본 대표 이미지 (이미지 생성 실패/보류 시 대체, §11)
+// 카테고리별 기본 대표 이미지 (§11) — AI 생성 편집 이미지(무대/조명, 실제 인물 얼굴 없음)
 export function defaultHeroFor(type: string): string {
-  return `/img/default-${['release', 'broadcast', 'award'].includes(type) ? type : 'news'}.svg`;
+  if (type === 'release') return '/img/generated/release-album.webp';
+  if (type === 'broadcast') return '/img/generated/broadcast-studio.webp';
+  if (type === 'award') return '/img/generated/award-trophy.webp';
+  return '/img/generated/news-general.webp';
 }
+
+// 공연/무대 공용 배너 이미지
+export const STAGE_IMAGE = '/img/generated/stage-concert.webp';
+export const HOME_HERO_IMAGE = '/img/generated/hero-home.webp';

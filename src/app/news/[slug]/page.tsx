@@ -95,7 +95,9 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
       <figure className="mt-5">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={a.heroImage || defaultHeroFor(a.type)} alt={a.heroImageAlt ?? a.title} width={1200} height={630} className="max-h-80 w-full rounded-xl border border-slate-200 object-cover" />
-        {a.isAiImage && <figcaption className="mt-1 text-xs text-slate-400">이해를 돕기 위해 제작된 이미지입니다.</figcaption>}
+        {(a.isAiImage || !a.heroImage) && (
+          <figcaption className="mt-1 text-xs text-slate-400">이해를 돕기 위해 제작된 이미지입니다. (실제 인물 사진이 아닙니다)</figcaption>
+        )}
       </figure>
 
       {/* 본문 */}

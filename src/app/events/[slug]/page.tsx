@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/db';
-import { buildMetadata } from '@/lib/seo';
+import { buildMetadata, STAGE_IMAGE } from '@/lib/seo';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { JsonLd } from '@/components/JsonLd';
 import { SampleBadge, EventStatusBadge } from '@/components/badges';
@@ -78,7 +78,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ sl
       {/* 무대 배너 (얼굴 사진 아님 — 저작권 안전) */}
       <div className="relative mb-4 overflow-hidden rounded-2xl">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/img/stage-banner.svg" alt="공연 무대 이미지" width={1200} height={360} className="h-40 w-full object-cover sm:h-52" />
+        <img src={STAGE_IMAGE} alt="공연 무대 이미지 (이해를 돕기 위해 제작된 이미지)" width={1200} height={630} className="h-44 w-full object-cover sm:h-60" />
         <span className="absolute left-3 top-3 flex items-center gap-2">
           <EventStatusBadge status={e.eventStatus} />
           {e.isSample && <SampleBadge />}

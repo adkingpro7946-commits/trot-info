@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/db';
-import { buildMetadata } from '@/lib/seo';
+import { buildMetadata, STAGE_IMAGE } from '@/lib/seo';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { JsonLd } from '@/components/JsonLd';
 import { SampleBadge } from '@/components/badges';
@@ -89,14 +89,20 @@ export default async function ArtistProfilePage({ params }: { params: Promise<{ 
         })}
       />
 
-      <header className="flex items-center gap-4">
-        <Avatar name={artist.stageName} size="xl" className="!h-20 !w-20 text-3xl sm:!h-24 sm:!w-24" ring />
-        <div className="min-w-0">
+      {/* 무대 배너 (AI 제작 이미지 — 실제 인물 사진 아님) */}
+      <div className="relative overflow-hidden rounded-2xl">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={STAGE_IMAGE} alt="공연 무대 이미지 (이해를 돕기 위해 제작된 이미지)" width={1200} height={630} className="h-32 w-full object-cover sm:h-40" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+      </div>
+      <header className="relative -mt-12 flex items-end gap-4 pl-2">
+        <Avatar name={artist.stageName} size="xl" className="!h-24 !w-24 text-3xl !ring-4 !ring-white" ring />
+        <div className="min-w-0 pb-1">
           <div className="flex flex-wrap items-center gap-2">
             <h1 className="text-2xl font-extrabold text-ink-900">{artist.stageName}</h1>
             {artist.isSample && <SampleBadge />}
           </div>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-0.5 text-sm text-slate-500">
             {[artist.agency, artist.debutDate ? `${formatDate(artist.debutDate)} 데뷔` : null].filter(Boolean).join(' · ')}
           </p>
         </div>

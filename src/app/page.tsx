@@ -3,6 +3,7 @@ import { prisma } from '@/lib/db';
 import { SearchBox } from '@/components/SearchBox';
 import { ArticleCard, EventCard, ArtistCard, ArtistAvatarLink } from '@/components/cards';
 import { REGIONS } from '@/lib/enums';
+import { HOME_HERO_IMAGE } from '@/lib/seo';
 import { formatDate } from '@/lib/format';
 
 export const dynamic = 'force-dynamic'; // 홈은 '오늘' 기준 최신성 우선
@@ -79,21 +80,32 @@ export default async function HomePage() {
 
   return (
     <div>
-      {/* 1. 검색 */}
-      <section className="rounded-2xl bg-gradient-to-br from-brand-50 to-white p-6 md:p-10">
-        <h1 className="text-2xl font-extrabold text-ink-900 md:text-3xl">
-          트로트 가수·공연·방송·신곡을 한곳에서
-        </h1>
-        <p className="mt-2 text-sm text-ink-700">
-          공식 출처 기반으로 정리한 트로트 전문 정보. 오늘 일정과 최신 소식을 확인하세요.
-        </p>
-        <div className="mt-5 max-w-content">
-          <SearchBox size="lg" />
-        </div>
-        <div className="mt-3 flex flex-wrap gap-2 text-sm">
-          <Link href="/events" className="rounded-full bg-white px-3 py-1 text-brand-700 ring-1 ring-brand-200 hover:bg-brand-50">오늘의 트로트 일정</Link>
-          <Link href="/artists" className="rounded-full bg-white px-3 py-1 text-brand-700 ring-1 ring-brand-200 hover:bg-brand-50">가수 이름으로 찾기</Link>
-          <Link href="/events" className="rounded-full bg-white px-3 py-1 text-brand-700 ring-1 ring-brand-200 hover:bg-brand-50">지역별 공연 찾기</Link>
+      {/* 1. 히어로 + 검색 */}
+      <section className="relative overflow-hidden rounded-2xl">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={HOME_HERO_IMAGE}
+          alt="트로트 공연 무대 (이해를 돕기 위해 제작된 이미지)"
+          width={1200}
+          height={630}
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-black/30" />
+        <div className="relative px-6 py-12 md:px-10 md:py-16">
+          <h1 className="text-2xl font-extrabold leading-tight text-white drop-shadow-sm md:text-4xl">
+            트로트 가수·공연·방송·신곡을<br className="hidden sm:block" /> 한곳에서
+          </h1>
+          <p className="mt-3 max-w-xl text-sm text-white/85 md:text-base">
+            공식 출처를 교차 확인해 정리한 트로트 전문 정보. 오늘 일정과 최신 소식을 확인하세요.
+          </p>
+          <div className="mt-6 max-w-content">
+            <SearchBox size="lg" />
+          </div>
+          <div className="mt-4 flex flex-wrap gap-2 text-sm">
+            <Link href="/events" className="rounded-full bg-white/15 px-3 py-1.5 font-medium text-white ring-1 ring-white/30 backdrop-blur transition hover:bg-white/25">오늘의 트로트 일정</Link>
+            <Link href="/artists" className="rounded-full bg-white/15 px-3 py-1.5 font-medium text-white ring-1 ring-white/30 backdrop-blur transition hover:bg-white/25">가수 이름으로 찾기</Link>
+            <Link href="/events" className="rounded-full bg-white/15 px-3 py-1.5 font-medium text-white ring-1 ring-white/30 backdrop-blur transition hover:bg-white/25">지역별 공연 찾기</Link>
+          </div>
         </div>
       </section>
 
