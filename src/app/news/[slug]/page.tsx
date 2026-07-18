@@ -10,6 +10,7 @@ import { EventCard } from '@/components/cards';
 import { SourceList } from '@/components/SourceList';
 import { articleLd } from '@/lib/structured-data';
 import { renderMarkdown } from '@/lib/markdown';
+import { parseArray } from '@/lib/json';
 import { ARTICLE_TYPE_LABEL } from '@/lib/enums';
 import { formatDate, formatDateTime } from '@/lib/format';
 
@@ -50,6 +51,12 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     image: a.heroImage,
     imageAlt: a.heroImageAlt,
     type: 'article',
+    keywords: [
+      ...(a.primaryKeyword ? [a.primaryKeyword] : []),
+      ...parseArray(a.relatedKeywords),
+      ...parseArray(a.tags),
+      ...a.artists.map((ar) => ar.stageName),
+    ],
     publishedTime: a.publishedAt?.toISOString(),
     modifiedTime: a.updatedAt.toISOString(),
   });

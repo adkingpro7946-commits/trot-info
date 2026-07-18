@@ -9,6 +9,16 @@ export function abs(path: string): string {
   return `${SITE_URL}${path.startsWith('/') ? '' : '/'}${path}`;
 }
 
+// 사이트 전역 기본 키워드 (검색 노출용, §13)
+export const SITE_KEYWORDS = [
+  '트로트', '트로트 가수', '트로트 공연', '트로트 콘서트', '트로트 방송',
+  '트로트 신곡', '트로트 일정', '미스터트롯', '미스트롯', '현역가왕', '불타는 트롯맨',
+  '트로트 오디션', '트로트 순위', '트로트 프로필',
+];
+
+// OG/트위터 기본 대표 이미지 (개별 이미지 없을 때)
+const DEFAULT_OG_IMAGE = '/img/generated/hero-home.webp';
+
 interface PageMetaInput {
   title: string;
   description: string;
@@ -17,6 +27,7 @@ interface PageMetaInput {
   image?: string | null;
   imageAlt?: string | null;
   type?: 'website' | 'article' | 'profile';
+  keywords?: string[];
   publishedTime?: string;
   modifiedTime?: string;
 }
@@ -24,15 +35,18 @@ interface PageMetaInput {
 export function buildMetadata(i: PageMetaInput): Metadata {
   const url = abs(i.path);
   const index = i.index !== false;
-  const images = i.image
-    ? [{ url: abs(i.image), width: 1200, height: 630, alt: i.imageAlt ?? i.title }]
-    : [];
+  // 이미지가 없으면 기본 무대 이미지로 대체 → 모든 페이지가 OG 카드 이미지를 갖는다(공유·네이버 노출 강화)
+  const imgUrl = abs(i.image || DEFAULT_OG_IMAGE);
+  const images = [{ url: imgUrl, width: 1200, height: 630, alt: i.imageAlt ?? i.title }];
+  // 페이지 키워드 + 전역 키워드 결합(중복 제거)
+  const keywords = Array.from(new Set([...(i.keywords ?? []), ...SITE_KEYWORDS]));
   return {
     title: i.title,
     description: i.description,
+    keywords,
     alternates: { canonical: url },
     robots: index
-      ? { index: true, follow: true }
+      ? { index: true, follow: true, googleBot: { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1 } }
       : { index: false, follow: true }, // 검색 가치 없는 페이지 noindex (§17)
     openGraph: {
       title: i.title,
@@ -46,10 +60,10 @@ export function buildMetadata(i: PageMetaInput): Metadata {
       ...(i.modifiedTime ? { modifiedTime: i.modifiedTime } : {}),
     },
     twitter: {
-      card: images.length ? 'summary_large_image' : 'summary',
+      card: 'summary_large_image',
       title: i.title,
       description: i.description,
-      images: images.map((im) => im.url),
+      images: [imgUrl],
     },
   };
 }

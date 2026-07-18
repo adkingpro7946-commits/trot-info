@@ -48,6 +48,14 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     description: artist.profileSummary.slice(0, 150),
     path: `/artists/${artist.slug}`,
     type: 'profile',
+    keywords: [
+      artist.stageName,
+      `${artist.stageName} 프로필`,
+      `${artist.stageName} 대표곡`,
+      `${artist.stageName} 공연`,
+      `${artist.stageName} 노래`,
+      ...(artist.agency ? [artist.agency] : []),
+    ],
   });
 }
 
