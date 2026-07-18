@@ -23,10 +23,11 @@ export function Footer() {
             </ul>
           </div>
           <div>
-            <p className="font-bold text-ink-900">문의</p>
+            <p className="font-bold text-ink-900">문의·정보</p>
             <ul className="mt-2 space-y-1">
               <li><Link href="/corrections" className="hover:text-brand-600">정보 정정 요청</Link></li>
               <li><Link href="/about" className="hover:text-brand-600">사이트 소개·운영 원칙</Link></li>
+              <li><Link href="/privacy" className="hover:text-brand-600">개인정보처리방침</Link></li>
             </ul>
           </div>
         </div>

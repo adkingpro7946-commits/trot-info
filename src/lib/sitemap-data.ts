@@ -26,6 +26,7 @@ export async function staticUrls(): Promise<UrlEntry[]> {
     { loc: abs('/broadcasts'), changefreq: 'daily', priority: 0.6 },
     { loc: abs('/music'), changefreq: 'weekly', priority: 0.6 },
     { loc: abs('/about'), changefreq: 'monthly', priority: 0.3 },
+    { loc: abs('/privacy'), changefreq: 'yearly', priority: 0.2 },
     // 고유 설명이 있는 지역 페이지만 색인 (§17)
     ...REGIONS.filter((r) => r.slug !== 'other').map((r) => ({
       loc: abs(`/events/region/${r.slug}`), changefreq: 'weekly', priority: 0.5,
