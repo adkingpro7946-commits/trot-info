@@ -61,12 +61,20 @@ export default async function HomePage() {
     }),
   ]);
 
-  const artistStrip = await prisma.artist.findMany({
-    where: { status: 'published' },
-    orderBy: { stageName: 'asc' },
-    take: 14,
-    select: { slug: true, stageName: true },
-  });
+  const [artistStrip, guides] = await Promise.all([
+    prisma.artist.findMany({
+      where: { status: 'published' },
+      orderBy: { stageName: 'asc' },
+      take: 16,
+      select: { slug: true, stageName: true },
+    }),
+    prisma.article.findMany({
+      where: { status: 'published', type: 'guide' },
+      orderBy: { publishedAt: 'desc' },
+      take: 3,
+      select: { slug: true, title: true, description: true, type: true, heroImage: true, heroImageAlt: true, publishedAt: true, isSample: true },
+    }),
+  ]);
 
   // 최신 발행 소식 (오늘 것이 없을 때 대체)
   const latestNews =
@@ -175,6 +183,15 @@ export default async function HomePage() {
                 {m.releaseDate && <p className="mt-1 text-xs text-slate-500">{formatDate(m.releaseDate)} 발매</p>}
               </Link>
             ))}
+          </div>
+        </Section>
+      )}
+
+      {/* 트로트 가이드·읽을거리 (실제 분석 데이터 없는 '인기'는 표시하지 않음 — §15) */}
+      {guides.length > 0 && (
+        <Section title="트로트 가이드·읽을거리" href="/news">
+          <div className="grid gap-3 md:grid-cols-3">
+            {guides.map((g) => <ArticleCard key={g.slug} article={g} />)}
           </div>
         </Section>
       )}
