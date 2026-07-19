@@ -6,9 +6,10 @@ import { JsonLd } from '@/components/JsonLd';
 import { organizationLd, websiteLd } from '@/lib/structured-data';
 import { SITE_NAME, SITE_URL, SITE_KEYWORDS, abs } from '@/lib/seo';
 
-// 검색엔진 사이트 소유 확인 코드(등록 후 값 채우면 <head>에 자동 삽입)
-const GOOGLE_VERIFY = process.env.GOOGLE_SITE_VERIFICATION;
-const NAVER_VERIFY = process.env.NAVER_SITE_VERIFICATION;
+// 검색엔진 사이트 소유 확인 코드. env가 우선이며, 없으면 아래 하드코딩 값 사용
+// (Vercel 환경변수를 못 바꾸는 상황 대비. 인증코드는 공개돼도 무방한 값).
+const GOOGLE_VERIFY = process.env.GOOGLE_SITE_VERIFICATION || '';
+const NAVER_VERIFY = process.env.NAVER_SITE_VERIFICATION || '912566d2b014d83c4df9b3fd948e36bb41233d1d';
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
