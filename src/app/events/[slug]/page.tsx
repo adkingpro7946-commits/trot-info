@@ -2,7 +2,8 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/db';
-import { buildMetadata, STAGE_IMAGE } from '@/lib/seo';
+import { buildMetadata } from '@/lib/seo';
+import { concertImage } from '@/lib/visuals';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { JsonLd } from '@/components/JsonLd';
 import { SampleBadge, EventStatusBadge } from '@/components/badges';
@@ -38,7 +39,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     title: `${e.eventName} 날짜·장소·예매 정보`,
     description: `${e.eventName} — ${formatDate(e.startDateTime)}${e.venue ? ` · ${e.venue}` : ''}. 공식 출처 기반 안내. 일정은 변경될 수 있습니다.`,
     path: `/events/${e.slug}`,
-    image: STAGE_IMAGE,
+    image: concertImage(e.slug),
     keywords: [
       e.eventName,
       ...e.artists.map((a) => `${a.stageName} 콘서트`),
@@ -85,7 +86,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ sl
       {/* 무대 배너 (얼굴 사진 아님 — 저작권 안전) */}
       <div className="relative mb-4 overflow-hidden rounded-2xl">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={STAGE_IMAGE} alt="공연 무대 이미지 (이해를 돕기 위해 제작된 이미지)" width={1200} height={630} className="h-44 w-full object-cover sm:h-60" />
+        <img src={concertImage(e.slug)} alt="공연 무대 이미지 (이해를 돕기 위해 제작된 이미지)" width={1200} height={630} className="h-44 w-full object-cover sm:h-60" />
         <span className="absolute left-3 top-3 flex items-center gap-2">
           <EventStatusBadge status={e.eventStatus} />
           {e.isSample && <SampleBadge />}

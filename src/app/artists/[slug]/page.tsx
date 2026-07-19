@@ -2,7 +2,8 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/db';
-import { buildMetadata, STAGE_IMAGE } from '@/lib/seo';
+import { buildMetadata } from '@/lib/seo';
+import { concertImage } from '@/lib/visuals';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { JsonLd } from '@/components/JsonLd';
 import { SampleBadge } from '@/components/badges';
@@ -100,7 +101,7 @@ export default async function ArtistProfilePage({ params }: { params: Promise<{ 
       {/* 무대 배너 (AI 제작 이미지 — 실제 인물 사진 아님) */}
       <div className="relative overflow-hidden rounded-2xl">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={STAGE_IMAGE} alt="공연 무대 이미지 (이해를 돕기 위해 제작된 이미지)" width={1200} height={630} className="h-32 w-full object-cover sm:h-40" />
+        <img src={concertImage(artist.slug)} alt="공연 무대 이미지 (이해를 돕기 위해 제작된 이미지)" width={1200} height={630} className="h-32 w-full object-cover sm:h-40" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
       </div>
       <header className="relative -mt-12 flex items-end gap-4 pl-2">

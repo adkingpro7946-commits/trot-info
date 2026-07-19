@@ -2,7 +2,8 @@ import Link from 'next/link';
 import { SampleBadge, EventStatusBadge } from './badges';
 import { Avatar, AvatarStack } from './Avatar';
 import { ARTICLE_TYPE_LABEL, regionLabel } from '@/lib/enums';
-import { defaultHeroFor, STAGE_IMAGE } from '@/lib/seo';
+import { defaultHeroFor } from '@/lib/seo';
+import { concertImage } from '@/lib/visuals';
 import { formatDate, formatDateTime } from '@/lib/format';
 
 export function ArtistCard({
@@ -73,7 +74,7 @@ export function EventCard({
     <article className="group overflow-hidden rounded-xl border border-slate-200 transition hover:border-brand-300 hover:shadow-sm">
       <Link href={`/events/${event.slug}`} className="relative block">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={STAGE_IMAGE} alt="" width={1200} height={630} className="h-28 w-full object-cover" />
+        <img src={concertImage(event.slug)} alt="" width={1200} height={630} className="h-28 w-full object-cover" />
         <span className="absolute left-2 top-2"><EventStatusBadge status={event.eventStatus} /></span>
         {event.isSample && <span className="absolute right-2 top-2"><SampleBadge /></span>}
         {performers.length > 0 && (
