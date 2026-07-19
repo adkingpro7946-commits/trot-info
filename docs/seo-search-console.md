@@ -12,7 +12,7 @@
 ## B. 사용자가 등록할 것 (각 5분, 무료)
 
 ### 1) 구글 서치콘솔 (search.google.com/search-console)
-1. **속성 추가 → URL 접두어** → `https://trot-info-sandy.vercel.app` 입력
+1. **속성 추가 → URL 접두어** → `https://trotpick.kr` 입력
 2. 소유 확인: **HTML 태그** 방식 선택 → `content="..."` 값 복사
 3. Vercel → 환경변수에 `GOOGLE_SITE_VERIFICATION` = 그 값 → **재배포**
 4. 서치콘솔에서 **확인** 클릭
@@ -20,7 +20,7 @@
 6. (선택) 주요 URL은 **URL 검사 → 색인 생성 요청**
 
 ### 2) 네이버 서치어드바이저 (searchadvisor.naver.com)
-1. **웹마스터도구 → 사이트 등록** → `https://trot-info-sandy.vercel.app`
+1. **웹마스터도구 → 사이트 등록** → `https://trotpick.kr`
 2. 소유 확인: **HTML 태그** 방식 → `content` 값 복사
 3. Vercel 환경변수에 `NAVER_SITE_VERIFICATION` = 그 값 → **재배포** → **확인**
 4. **요청 → 사이트맵 제출** → `sitemap.xml`
@@ -51,7 +51,7 @@
 - {가수명} 콘서트 2026 / {지역} 트로트 공연 / 트로트 공연 예매
 
 ## D. 색인 확인 방법
-- 구글: 검색창에 `site:trot-info-sandy.vercel.app` → 색인된 페이지 수 확인
+- 구글: 검색창에 `site:trotpick.kr` → 색인된 페이지 수 확인
 - 네이버: 서치어드바이저 → 수집/색인 현황
 - 색인은 등록 후 며칠~수 주 걸릴 수 있음. sitemap 제출과 내부링크가 속도를 높인다.
 
