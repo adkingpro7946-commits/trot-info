@@ -1,7 +1,14 @@
 // SEO 메타데이터 헬퍼 (§12)
 import type { Metadata } from 'next';
 
-export const SITE_URL = (process.env.SITE_URL ?? 'http://localhost:3000').replace(/\/$/, '');
+// 프로덕션 대표 도메인. Vercel 환경변수(SITE_URL)가 아직 옛 vercel.app 값이거나 비어 있어도
+// 이 도메인으로 canonical/sitemap/OG가 생성되도록 코드에서 보정한다.
+// (env가 vercel.app 이 아닌 실제 값으로 지정되면 그 값을 우선 사용 — 로컬 localhost 포함)
+const PROD_DOMAIN = 'https://www.trotpick.co.kr';
+const _envSiteUrl = process.env.SITE_URL?.trim();
+export const SITE_URL = (
+  _envSiteUrl && !_envSiteUrl.includes('vercel.app') ? _envSiteUrl : PROD_DOMAIN
+).replace(/\/$/, '');
 export const SITE_NAME = process.env.SITE_NAME ?? '트로트 인포';
 
 export function abs(path: string): string {
