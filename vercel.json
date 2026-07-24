@@ -1,6 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "DATABASE_PROVIDER=postgresql node scripts/set-db-provider.mjs && prisma generate && prisma db push --accept-data-loss && node scripts/seed-content.mjs && next build",
+  "buildCommand": "DATABASE_PROVIDER=postgresql node scripts/set-db-provider.mjs && prisma generate && prisma db push --accept-data-loss && (timeout 600 node scripts/seed-content.mjs || echo '시드 단계 상한/실패 — 배포 계속') && next build",
   "crons": [
     {
       "path": "/api/cron",

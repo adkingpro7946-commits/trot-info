@@ -60,7 +60,7 @@ const files = ['seed-content.ts', ...batchNums.map((n) => `seed-content-batch${n
 const tsxBin = join(root, 'node_modules', '.bin', process.platform === 'win32' ? 'tsx.cmd' : 'tsx');
 const runner = existsSync(tsxBin) ? tsxBin : 'npx';
 const baseArgs = runner === 'npx' ? ['--no-install', 'tsx'] : [];
-const CHILD_TIMEOUT = 120000; // 자식 1개 최대 120초
+const CHILD_TIMEOUT = 90000; // 자식 1개 최대 90초
 
 function runOnce(abs) {
   return spawnSync(runner, [...baseArgs, abs], {
@@ -71,14 +71,19 @@ function runOnce(abs) {
 console.log(`▶ 콘텐츠 자동시드 시작 — 대상 ${files.length}개 (풀링 URL 적용)`);
 let ok = 0;
 const failed = [];
+let current = null;
+writeStatus({ skipped: false, running: true, ok, total: files.length, failed, current });
 for (const f of files) {
   const abs = join(prismaDir, f);
   if (!existsSync(abs)) { console.log(`  - 없음, 건너뜀 ${f}`); continue; }
+  current = f;
+  writeStatus({ skipped: false, running: true, ok, total: files.length, failed, current }); // 진행 중 기록(상한에 죽어도 어디까지 갔는지 확인)
   let r = runOnce(abs);
   if (r.status !== 0) { console.error(`  ↻ 재시도 ${f}`); r = runOnce(abs); } // 1회 재시도
   if (r.status === 0) ok++;
   else { failed.push(`${f}(${r.error?.code || 'exit ' + r.status})`); console.error(`  ✖ 실패 ${f}`); }
+  writeStatus({ skipped: false, running: true, ok, total: files.length, failed, current: f });
 }
 console.log(`\n✔ 콘텐츠 자동시드 완료 — 성공 ${ok}/${files.length}` + (failed.length ? `, 실패: ${failed.join(', ')}` : ''));
-writeStatus({ skipped: false, ok, total: files.length, failed });
+writeStatus({ skipped: false, running: false, ok, total: files.length, failed });
 process.exit(0); // 비파괴: 시드 실패해도 배포는 계속
