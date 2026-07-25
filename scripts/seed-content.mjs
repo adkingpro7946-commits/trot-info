@@ -50,17 +50,19 @@ function pooled(url) {
 const childEnv = { ...process.env, DATABASE_URL: pooled(rawUrl), DATABASE_PROVIDER: 'postgresql' };
 
 // 실행 대상: seed-content.ts → seed-content-batchN.ts (숫자 오름차순). seed.ts 는 제외.
+// 새 콘텐츠(높은 batch번호)를 먼저 시드 → 시간상한에 걸려도 최신 추가분은 항상 반영.
+// 아티스트는 이전 배포에서 이미 Neon에 존재(멱등 upsert)하므로 역순 링크도 정상.
 const batchNums = readdirSync(prismaDir)
   .map((f) => /^seed-content-batch(\d+)\.ts$/.exec(f))
   .filter(Boolean)
   .map((m) => Number(m[1]))
-  .sort((a, b) => a - b);
-const files = ['seed-content.ts', ...batchNums.map((n) => `seed-content-batch${n}.ts`)];
+  .sort((a, b) => b - a); // 내림차순(최신 먼저)
+const files = [...batchNums.map((n) => `seed-content-batch${n}.ts`), 'seed-content.ts'];
 
 const tsxBin = join(root, 'node_modules', '.bin', process.platform === 'win32' ? 'tsx.cmd' : 'tsx');
 const runner = existsSync(tsxBin) ? tsxBin : 'npx';
 const baseArgs = runner === 'npx' ? ['--no-install', 'tsx'] : [];
-const CHILD_TIMEOUT = 90000; // 자식 1개 최대 90초
+const CHILD_TIMEOUT = 150000; // 자식 1개 최대 150초(대형 배치 + Neon 지연 대비)
 
 function runOnce(abs) {
   return spawnSync(runner, [...baseArgs, abs], {

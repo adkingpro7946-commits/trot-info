@@ -32,8 +32,8 @@ export function Footer() {
           </div>
         </div>
         <p className="mt-6 border-t border-slate-200 pt-4 text-xs text-slate-500">
-          현재 페이지의 가수·공연·기사 데이터 중 SAMPLE 표시가 있는 항목은 구조 시연용 가상 데이터입니다.
-          © {SITE_NAME}
+          공연 일정·가격 등은 변동될 수 있으니 예매·관람 전 공식 채널에서 확인하시기 바랍니다.
+          각 정보의 출처와 마지막 확인일은 해당 페이지에 표기됩니다. © {SITE_NAME}
         </p>
       </div>
     </footer>
