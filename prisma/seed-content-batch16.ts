@@ -149,21 +149,8 @@ const ALBUMS: Parameters<typeof upsertAlbum>[0][] = [
 ];
 
 // ==================== 검증된 공연 (조사팀 결과로 채움) ====================
+// 주: 임영웅 THE STADIUM 2(고양)는 batch3의 'lim-young-woong-stadium2-2026-goyang'로 이미 등록됨 → 중복 제거.
 const EVENTS: Parameters<typeof upsertEvent>[0][] = [
-  {
-    slug: 'lim-young-woong-the-stadium2-2026-goyang',
-    eventName: '2026 임영웅 콘서트 IM HERO – THE STADIUM 2',
-    artistSlugs: ['lim-young-woong'],
-    start: '2026-09-04T18:30:00+09:00', end: '2026-09-06T18:30:00+09:00',
-    venue: '고양종합운동장 주경기장', region: 'gyeonggi',
-    ticketVendor: 'NOL 티켓(인터파크)', ticketOpen: '2026-07-16T20:00:00+09:00',
-    eventStatus: 'ticket_open',
-    officialSourceUrl: 'https://sports.khan.co.kr/article/202606170818003/',
-    sources: [
-      { title: '임영웅, 9월 4일 고양을 흔든다', publisher: '스포츠경향', url: 'https://sports.khan.co.kr/article/202606170818003/' },
-      { title: "임영웅, 9월 고양서 콘서트 개최…16일 '피케팅' 예고", publisher: '헤럴드경제', url: 'https://biz.heraldcorp.com/article/10801014' },
-    ],
-  },
   {
     slug: 'miss-trot-4-national-tour-2026',
     eventName: '미스트롯4 전국투어 콘서트',
