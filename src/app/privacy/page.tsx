@@ -49,14 +49,29 @@ export default function PrivacyPage() {
 
         <h2>5. 쿠키 및 광고</h2>
         <p>
-          사이트는 서비스 제공에 필요한 최소한의 쿠키를 사용합니다. 또한 사이트는 <strong>네이버 애드포스트</strong> 등
-          제3자 광고 서비스를 게재할 수 있으며, 이 경우 광고 제공사(네이버 및 그 광고 파트너)가 쿠키 등을 통해
-          이용자의 방문 기록 등 정보를 수집·이용하여 이용자의 관심에 기반한 광고를 제공할 수 있습니다.
+          사이트는 서비스 제공에 필요한 최소한의 쿠키를 사용합니다. 또한 사이트는 <strong>구글 애드센스(Google AdSense)</strong>와{' '}
+          <strong>네이버 애드포스트</strong> 등 제3자 광고 서비스를 게재할 수 있습니다.
         </p>
+        <ul>
+          <li>
+            <strong>구글 등 제3자 광고 공급업체</strong>는 쿠키를 사용하여 이용자가 본 사이트 및 다른 웹사이트에 방문한
+            기록을 바탕으로 광고를 게재합니다. 특히 구글은 <strong>DART 쿠키</strong>를 사용해 이용자의 관심에 기반한
+            광고를 제공할 수 있습니다.
+          </li>
+          <li>
+            이용자는 <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener noreferrer nofollow">구글 광고 설정</a>에서
+            맞춤 광고를 사용하지 않도록 설정하거나,{' '}
+            <a href="https://www.aboutads.info" target="_blank" rel="noopener noreferrer nofollow">www.aboutads.info</a>에서
+            제3자 공급업체의 맞춤 광고 쿠키를 해제할 수 있습니다.
+          </li>
+          <li>
+            네이버 애드포스트 등 국내 광고의 경우 네이버의 광고 설정 및{' '}
+            <a href="https://www.privacy.go.kr" target="_blank" rel="noopener noreferrer nofollow">개인정보포털</a> 등을 통해 관리할 수 있습니다.
+          </li>
+        </ul>
         <p>
-          이러한 광고 쿠키 수집·이용은 광고 제공사의 정책을 따릅니다. 이용자는 브라우저 설정을 통해 쿠키 저장을
-          거부하거나, 네이버 광고의 경우 네이버의 광고 설정 및 <a href="https://www.privacy.go.kr" target="_blank" rel="noopener noreferrer nofollow">개인정보포털</a>{' '}
-          등을 통해 맞춤형 광고 수신을 관리할 수 있습니다. 쿠키를 거부해도 사이트의 정보 열람에는 제한이 없습니다.
+          이용자는 브라우저 설정을 통해 쿠키 저장을 거부할 수 있으며, 쿠키를 거부해도 사이트의 정보 열람에는 제한이 없습니다.
+          광고 쿠키의 수집·이용은 각 광고 제공사의 개인정보처리방침을 따릅니다.
         </p>
 
         <h2>6. 이용자의 권리</h2>

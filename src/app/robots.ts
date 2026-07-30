@@ -10,6 +10,9 @@ export default function robots(): MetadataRoute.Robots {
       // 구글
       { userAgent: 'Googlebot', allow: '/', disallow },
       { userAgent: 'Googlebot-Image', allow: '/' },
+      // 구글 애드센스 광고 크롤러(광고-콘텐츠 매칭용) — 콘텐츠 접근 허용
+      { userAgent: 'Mediapartners-Google', allow: '/', disallow },
+      { userAgent: 'AdsBot-Google', allow: '/', disallow },
       // 네이버(Yeti) — 국내 검색 노출용
       { userAgent: 'Yeti', allow: '/', disallow },
       // 다음(Daum)
