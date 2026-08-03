@@ -39,7 +39,11 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true, googleBot: { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1 } },
   verification: {
     ...(GOOGLE_VERIFY ? { google: GOOGLE_VERIFY } : {}),
-    ...(NAVER_VERIFY ? { other: { 'naver-site-verification': NAVER_VERIFY } } : {}),
+    other: {
+      ...(NAVER_VERIFY ? { 'naver-site-verification': NAVER_VERIFY } : {}),
+      // 구글 애드센스 소유확인용 메타 태그 (애드센스 화면에서 "메타 태그" 방식 선택)
+      'google-adsense-account': ADSENSE_CLIENT,
+    },
   },
 };
 
