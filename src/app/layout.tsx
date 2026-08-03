@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import Script from 'next/script';
 import './globals.css';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
@@ -47,15 +46,15 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ko">
-      <body className="flex min-h-screen flex-col">
-        {/* 구글 애드센스 — 사이트 소유확인 및 광고 게재 스크립트 (전 페이지 공통) */}
-        <Script
-          id="google-adsense"
+      <head>
+        {/* 구글 애드센스 — 리터럴 script 태그로 head에 직접 삽입(소유확인 크롤러 대응) */}
+        <script
           async
           src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
           crossOrigin="anonymous"
-          strategy="beforeInteractive"
         />
+      </head>
+      <body className="flex min-h-screen flex-col">
         <JsonLd data={[organizationLd(), websiteLd()]} />
         <Header />
         <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-6">{children}</main>
