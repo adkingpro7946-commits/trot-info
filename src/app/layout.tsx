@@ -1,10 +1,14 @@
 import type { Metadata } from 'next';
+import Script from 'next/script';
 import './globals.css';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { JsonLd } from '@/components/JsonLd';
 import { organizationLd, websiteLd } from '@/lib/structured-data';
 import { SITE_NAME, SITE_URL, SITE_KEYWORDS, abs } from '@/lib/seo';
+
+// 구글 애드센스 게시자 ID (공개돼도 무방한 값). env 우선, 없으면 하드코딩(Vercel env 미변경 대비).
+const ADSENSE_CLIENT = process.env.ADSENSE_CLIENT || 'ca-pub-9432801136941889';
 
 // 검색엔진 사이트 소유 확인 코드. env가 우선이며, 없으면 아래 하드코딩 값 사용
 // (Vercel 환경변수를 못 바꾸는 상황 대비. 인증코드는 공개돼도 무방한 값).
@@ -44,6 +48,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="ko">
       <body className="flex min-h-screen flex-col">
+        {/* 구글 애드센스 — 사이트 소유확인 및 광고 게재 스크립트 (전 페이지 공통) */}
+        <Script
+          id="google-adsense"
+          async
+          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
         <JsonLd data={[organizationLd(), websiteLd()]} />
         <Header />
         <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-6">{children}</main>
