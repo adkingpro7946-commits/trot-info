@@ -39,15 +39,12 @@ export async function staticUrls(): Promise<UrlEntry[]> {
 
 export async function artistUrls(): Promise<UrlEntry[]> {
   const artists = await safe(prisma.artist.findMany({ where: { status: 'published' }, select: { slug: true, updatedAt: true } }), []);
-  return artists.flatMap((a) => {
-    const lastmod = iso(a.updatedAt);
-    return [
-      { loc: abs(`/artists/${a.slug}`), lastmod, changefreq: 'weekly', priority: 0.7 },
-      { loc: abs(`/artists/${a.slug}/timeline`), lastmod, changefreq: 'monthly', priority: 0.4 },
-      { loc: abs(`/artists/${a.slug}/discography`), lastmod, changefreq: 'monthly', priority: 0.4 },
-      { loc: abs(`/artists/${a.slug}/events`), lastmod, changefreq: 'weekly', priority: 0.4 },
-    ];
-  });
+  // 신규 도메인 크롤 예산 집중을 위해 사이트맵에는 알짜 '프로필' 페이지만 포함한다.
+  // 하위페이지(타임라인·음반·공연)는 프로필에서 내부링크로 연결돼 크롤 가능(고아 아님)하므로
+  // 본문이 겹치는 얇은 페이지를 사이트맵에서 제외해 색인 우선순위를 높인다.
+  return artists.map((a) => ({
+    loc: abs(`/artists/${a.slug}`), lastmod: iso(a.updatedAt), changefreq: 'weekly', priority: 0.7,
+  }));
 }
 
 // 사이트맵 인덱스용 — 섹션별 최신 수정일(max)로 lastmod를 채워 변경 섹션 우선 재크롤 유도
