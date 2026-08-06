@@ -39,12 +39,34 @@ export async function staticUrls(): Promise<UrlEntry[]> {
 
 export async function artistUrls(): Promise<UrlEntry[]> {
   const artists = await safe(prisma.artist.findMany({ where: { status: 'published' }, select: { slug: true, updatedAt: true } }), []);
-  return artists.flatMap((a) => [
-    { loc: abs(`/artists/${a.slug}`), lastmod: iso(a.updatedAt), changefreq: 'weekly', priority: 0.7 },
-    { loc: abs(`/artists/${a.slug}/timeline`), changefreq: 'monthly', priority: 0.4 },
-    { loc: abs(`/artists/${a.slug}/discography`), changefreq: 'monthly', priority: 0.4 },
-    { loc: abs(`/artists/${a.slug}/events`), changefreq: 'weekly', priority: 0.4 },
+  return artists.flatMap((a) => {
+    const lastmod = iso(a.updatedAt);
+    return [
+      { loc: abs(`/artists/${a.slug}`), lastmod, changefreq: 'weekly', priority: 0.7 },
+      { loc: abs(`/artists/${a.slug}/timeline`), lastmod, changefreq: 'monthly', priority: 0.4 },
+      { loc: abs(`/artists/${a.slug}/discography`), lastmod, changefreq: 'monthly', priority: 0.4 },
+      { loc: abs(`/artists/${a.slug}/events`), lastmod, changefreq: 'weekly', priority: 0.4 },
+    ];
+  });
+}
+
+// 사이트맵 인덱스용 — 섹션별 최신 수정일(max)로 lastmod를 채워 변경 섹션 우선 재크롤 유도
+export async function sitemapIndexEntries(): Promise<{ loc: string; lastmod?: string }[]> {
+  const [artist, article, event, music] = await Promise.all([
+    safe(prisma.artist.aggregate({ where: { status: 'published' }, _max: { updatedAt: true } }), { _max: { updatedAt: null } }),
+    safe(prisma.article.aggregate({ where: { status: 'published', index: true }, _max: { updatedAt: true } }), { _max: { updatedAt: null } }),
+    safe(prisma.event.aggregate({ where: { status: 'published' }, _max: { lastUpdatedAt: true } }), { _max: { lastUpdatedAt: null } }),
+    safe(prisma.music.aggregate({ where: { status: 'published' }, _max: { updatedAt: true } }), { _max: { updatedAt: null } }),
   ]);
+  const dates = [artist._max.updatedAt, article._max.updatedAt, event._max.lastUpdatedAt, music._max.updatedAt].filter(Boolean) as Date[];
+  const newest = dates.length ? new Date(Math.max(...dates.map((d) => d.getTime()))) : null;
+  return [
+    { loc: '/sitemap-static.xml', lastmod: iso(newest) },
+    { loc: '/sitemap-artists.xml', lastmod: iso(artist._max.updatedAt) },
+    { loc: '/sitemap-news.xml', lastmod: iso(article._max.updatedAt) },
+    { loc: '/sitemap-events.xml', lastmod: iso(event._max.lastUpdatedAt) },
+    { loc: '/sitemap-music.xml', lastmod: iso(music._max.updatedAt) },
+  ];
 }
 
 export async function newsUrls(): Promise<UrlEntry[]> {
@@ -82,9 +104,13 @@ export function renderUrlset(entries: UrlEntry[]): string {
   return `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${body}</urlset>`;
 }
 
-export function renderSitemapIndex(files: string[]): string {
+export function renderSitemapIndex(files: (string | { loc: string; lastmod?: string })[]): string {
   const body = files
-    .map((f) => `<sitemap><loc>${esc(SITE_URL + f)}</loc></sitemap>`)
+    .map((f) => {
+      const item = typeof f === 'string' ? { loc: f } : f;
+      const lm = item.lastmod ? `<lastmod>${item.lastmod}</lastmod>` : '';
+      return `<sitemap><loc>${esc(SITE_URL + item.loc)}</loc>${lm}</sitemap>`;
+    })
     .join('');
   return `<?xml version="1.0" encoding="UTF-8"?><sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${body}</sitemapindex>`;
 }
