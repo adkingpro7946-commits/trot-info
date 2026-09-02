@@ -13,6 +13,7 @@ import { SourceList } from '@/components/SourceList';
 import { artistProfileLd } from '@/lib/structured-data';
 import { parseSocialLinks } from '@/lib/json';
 import { formatDate } from '@/lib/format';
+import { renderMarkdown } from '@/lib/markdown';
 
 export const revalidate = 600;
 
@@ -146,6 +147,14 @@ export default async function ArtistProfilePage({ params }: { params: Promise<{ 
           ) : <p className="mt-1 text-sm text-slate-400">등록된 소식 없음</p>}
         </div>
       </div>
+
+      {/* 인물 소개 — 검증된 사실 기반 심층 본문 */}
+      {artist.bio && (
+        <section className="mt-8">
+          <h2 className="text-lg font-bold text-ink-900">인물 소개</h2>
+          <div className="prose-trot mt-3 max-w-content" dangerouslySetInnerHTML={{ __html: renderMarkdown(artist.bio) }} />
+        </section>
+      )}
 
       {/* 기본 정보 — 확인된 항목만 (§4) */}
       <section className="mt-8">

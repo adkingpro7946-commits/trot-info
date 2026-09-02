@@ -37,6 +37,7 @@ model Artist {
   stageName          String
   realName           String?  // 공식 공개된 경우만
   profileSummary     String   // 3문장 핵심 소개
+  bio                String?  // 심층 인물 소개 본문(Markdown) — 검증된 사실 기반 자체 서술
   birthDate          DateTime?
   birthPlace         String?
   debutDate          DateTime?
