@@ -22,6 +22,17 @@ async function getEvent(slug: string) {
   });
 }
 
+// 출연 가수의 다른 공연 (교차링크)
+async function otherEventsByArtists(artistIds: string[], excludeSlug: string) {
+  if (!artistIds.length) return [];
+  return prisma.event.findMany({
+    where: { status: 'published', slug: { not: excludeSlug }, artists: { some: { id: { in: artistIds } } } },
+    select: { slug: true, eventName: true, startDateTime: true, venue: true },
+    orderBy: [{ startDateTime: 'asc' }],
+    take: 6,
+  });
+}
+
 export async function generateStaticParams() {
   try {
     const evs = await prisma.event.findMany({ where: { status: 'published' }, select: { slug: true } });
@@ -69,6 +80,15 @@ export default async function EventDetailPage({ params }: { params: Promise<{ sl
     e.eventStatus === 'postponed' ? { text: '이 공연은 연기되었습니다. 변경 일정을 공식 출처에서 확인하세요.', cls: 'bg-orange-50 text-orange-700' } :
     null;
 
+  const others = await otherEventsByArtists(e.artists.map((a) => a.id), slug);
+  const names = e.artists.map((a) => a.stageName).join(', ');
+  const intro = [
+    names ? `${names}의 공연 「${e.eventName}」` : `「${e.eventName}」`,
+    `은(는) ${formatDate(e.startDateTime)}${e.venue ? ` ${e.venue}에서` : ''} 예정된 트로트 공연입니다.`,
+    e.ticketVendor ? ` 예매는 ${e.ticketVendor}를 통해 진행되며, 아래 공식 출처에서 최신 정보를 확인할 수 있습니다.` : ' 자세한 일정과 예매 정보는 아래 공식 출처에서 확인할 수 있습니다.',
+    ' 공연 일정과 가격은 발표 후 변경될 수 있으므로 관람 전 공식 채널을 다시 확인하시기 바랍니다.',
+  ].join('');
+
   return (
     <div>
       <Breadcrumbs items={[{ name: '홈', path: '/' }, { name: '공연 일정', path: '/events' }, { name: e.eventName, path: `/events/${e.slug}` }]} />
@@ -104,6 +124,8 @@ export default async function EventDetailPage({ params }: { params: Promise<{ sl
       </div>
       <h1 className="text-2xl font-extrabold text-ink-900">{e.eventName}</h1>
 
+      <p className="mt-3 max-w-content leading-7 text-ink-800">{intro}</p>
+
       <dl className="mt-5">
         <InfoRow label="일시" value={formatDateTime(e.startDateTime) + (e.endDateTime ? ` ~ ${formatDateTime(e.endDateTime)}` : '')} />
         <InfoRow label="장소" value={e.venue} />
@@ -135,6 +157,37 @@ export default async function EventDetailPage({ params }: { params: Promise<{ sl
             본 사이트는 티켓을 직접 판매하지 않습니다. 가격·잔여 좌석은 예매처의 실시간 정보와 다를 수 있습니다.
           </p>
         </div>
+      )}
+
+      {/* 출연 가수 소개 — 맥락 보강 */}
+      {e.artists.length > 0 && (
+        <section className="mt-8">
+          <h2 className="text-lg font-bold text-ink-900">출연 가수</h2>
+          <div className="mt-2 space-y-3">
+            {e.artists.map((a) => (
+              <div key={a.id} className="rounded-xl border border-slate-200 p-4">
+                <Link href={`/artists/${a.slug}`} className="font-semibold text-ink-900 hover:text-brand-600">{a.stageName}</Link>
+                {a.profileSummary && <p className="mt-1 text-sm leading-6 text-ink-700">{a.profileSummary}</p>}
+                <Link href={`/artists/${a.slug}`} className="mt-1 inline-block text-sm text-brand-600 hover:underline">{a.stageName} 프로필 보기 →</Link>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* 관련 공연 — 교차링크 */}
+      {others.length > 0 && (
+        <section className="mt-8">
+          <h2 className="text-lg font-bold text-ink-900">출연 가수의 다른 공연</h2>
+          <ul className="mt-2 grid gap-2 sm:grid-cols-2">
+            {others.map((o) => (
+              <li key={o.slug} className="rounded-lg border border-slate-200 p-3">
+                <Link href={`/events/${o.slug}`} className="font-medium text-ink-900 hover:text-brand-600">{o.eventName}</Link>
+                <span className="ml-2 text-xs text-slate-500">{formatDate(o.startDateTime)}{o.venue ? ` · ${o.venue}` : ''}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
       )}
 
       {/* 출처 + 확인일 */}
