@@ -33,13 +33,9 @@ async function otherEventsByArtists(artistIds: string[], excludeSlug: string) {
   });
 }
 
+// 빌드 시 프리렌더하지 않고 런타임 ISR로 렌더(빌드 시 Neon 커넥션 풀 고갈 P2024 방지).
 export async function generateStaticParams() {
-  try {
-    const evs = await prisma.event.findMany({ where: { status: 'published' }, select: { slug: true } });
-    return evs.map((e) => ({ slug: e.slug }));
-  } catch {
-    return [];
-  }
+  return [];
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {

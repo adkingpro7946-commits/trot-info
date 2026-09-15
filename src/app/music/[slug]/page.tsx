@@ -33,13 +33,10 @@ async function otherMusicByArtists(artistIds: string[], excludeSlug: string) {
 
 const TYPE_LABEL: Record<string, string> = { album: '정규앨범', mini: '미니앨범', single: '싱글' };
 
+// 빌드 시 프리렌더하지 않고 런타임 ISR로 렌더(빌드 시 Neon 커넥션 풀 고갈 P2024 방지).
+// 페이지당 추가 관련-쿼리가 있어 대량 프리렌더 시 빌드가 실패할 수 있으므로 [] 반환.
 export async function generateStaticParams() {
-  try {
-    const ms = await prisma.music.findMany({ where: { status: 'published' }, select: { slug: true } });
-    return ms.map((m) => ({ slug: m.slug }));
-  } catch {
-    return [];
-  }
+  return [];
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
