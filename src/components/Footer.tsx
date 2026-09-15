@@ -1,11 +1,13 @@
 import Link from 'next/link';
 import { SITE_NAME } from '@/lib/seo';
+import { CoupangBanner } from './CoupangBanner';
 
 // 사이트 정보 원칙 + 정정 요청 안내 (§15·§18)
 export function Footer() {
   return (
     <footer className="mt-16 border-t border-slate-200 bg-slate-50">
       <div className="mx-auto max-w-5xl px-4 py-8 text-sm text-ink-700">
+        <CoupangBanner size="wide" className="!mt-0" />
         <div className="grid gap-6 md:grid-cols-3">
           <div>
             <p className="font-bold text-ink-900">{SITE_NAME}</p>

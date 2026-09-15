@@ -14,6 +14,7 @@ import { artistProfileLd } from '@/lib/structured-data';
 import { parseSocialLinks } from '@/lib/json';
 import { formatDate } from '@/lib/format';
 import { renderMarkdown } from '@/lib/markdown';
+import { CoupangBanner } from '@/components/CoupangBanner';
 
 export const revalidate = 600;
 
@@ -263,6 +264,8 @@ export default async function ArtistProfilePage({ params }: { params: Promise<{ 
           </div>
         </section>
       )}
+
+      <CoupangBanner size="wide" />
 
       {/* 공식 출처 */}
       {artist.sources.length > 0 && (

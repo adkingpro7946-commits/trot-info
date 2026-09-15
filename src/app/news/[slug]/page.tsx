@@ -10,6 +10,7 @@ import { EventCard } from '@/components/cards';
 import { SourceList } from '@/components/SourceList';
 import { articleLd } from '@/lib/structured-data';
 import { renderMarkdown } from '@/lib/markdown';
+import { CoupangBanner } from '@/components/CoupangBanner';
 import { parseArray } from '@/lib/json';
 import { ARTICLE_TYPE_LABEL } from '@/lib/enums';
 import { formatDate, formatDateTime } from '@/lib/format';
@@ -109,6 +110,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
 
       {/* 본문 */}
       <div className="prose-trot mt-6 max-w-content" dangerouslySetInnerHTML={{ __html: renderMarkdown(a.body) }} />
+      <CoupangBanner size="wide" />
 
       {a.timeSensitive && (
         <p className="mt-6 rounded-lg bg-amber-50 p-3 text-sm text-amber-800">

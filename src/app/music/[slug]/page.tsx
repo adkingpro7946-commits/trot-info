@@ -10,6 +10,7 @@ import { SourceList } from '@/components/SourceList';
 import { musicLd } from '@/lib/structured-data';
 import { parseArray } from '@/lib/json';
 import { formatDate } from '@/lib/format';
+import { CoupangBanner } from '@/components/CoupangBanner';
 
 export const revalidate = 600;
 
@@ -114,6 +115,8 @@ export default async function MusicDetailPage({ params }: { params: Promise<{ sl
           </ul>
         </section>
       )}
+
+      <CoupangBanner size="wide" />
 
       {m.sources.length > 0 && (
         <section className="mt-8 border-t border-slate-200 pt-6">
