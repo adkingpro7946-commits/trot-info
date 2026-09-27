@@ -2,7 +2,7 @@ import { prisma, safe } from '@/lib/db';
 import { SITE_NAME, SITE_URL, abs } from '@/lib/seo';
 
 export const runtime = 'nodejs';
-export const revalidate = 1800;
+export const revalidate = 43200;
 
 function esc(s: string) {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');

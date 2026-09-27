@@ -5,7 +5,7 @@ import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { ArtistCard } from '@/components/cards';
 import { SearchBox } from '@/components/SearchBox';
 
-export const revalidate = 600;
+export const revalidate = 21600; // 6시간 — DB 컴퓨트 절약(발행 크론은 하루 1회)
 
 export const metadata: Metadata = buildMetadata({
   title: '트로트 가수 목록 · 프로필·공연·방송·신곡 정리',

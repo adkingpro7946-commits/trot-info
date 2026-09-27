@@ -1,7 +1,7 @@
 import { renderSitemapIndex, sitemapIndexEntries } from '@/lib/sitemap-data';
 
 export const runtime = 'nodejs';
-export const revalidate = 3600;
+export const revalidate = 43200;
 
 // 사이트맵 인덱스 (§19) — 섹션별 lastmod 포함
 export async function GET() {

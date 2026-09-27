@@ -6,7 +6,7 @@ import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { SampleBadge } from '@/components/badges';
 import { EventCard } from '@/components/cards';
 
-export const revalidate = 600;
+export const revalidate = 21600; // 6시간 — DB 컴퓨트 절약(발행 크론은 하루 1회)
 
 async function get(slug: string) {
   return prisma.artist.findFirst({

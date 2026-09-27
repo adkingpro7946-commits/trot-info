@@ -15,7 +15,7 @@ import { parseArray } from '@/lib/json';
 import { ARTICLE_TYPE_LABEL } from '@/lib/enums';
 import { formatDate, formatDateTime } from '@/lib/format';
 
-export const revalidate = 300;
+export const revalidate = 21600; // 6시간 — DB 컴퓨트 절약(발행 크론은 하루 1회)
 
 async function getArticle(slug: string) {
   return prisma.article.findFirst({

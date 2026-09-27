@@ -6,7 +6,8 @@ import { REGIONS } from '@/lib/enums';
 import { HOME_HERO_IMAGE } from '@/lib/seo';
 import { formatDate } from '@/lib/format';
 
-export const dynamic = 'force-dynamic'; // 홈은 '오늘' 기준 최신성 우선
+// 홈도 ISR: 매 요청 DB 조회가 Neon 무료 컴퓨트(월 100시간)를 소진해 사이트가 멈췄음(2026-09). DB 장애 시에도 마지막 정상 페이지 유지.
+export const revalidate = 3600;
 
 function Section({ title, href, children }: { title: string; href?: string; children: React.ReactNode }) {
   return (

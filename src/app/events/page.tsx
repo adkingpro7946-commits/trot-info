@@ -6,7 +6,7 @@ import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { EventCard } from '@/components/cards';
 import { REGIONS } from '@/lib/enums';
 
-export const revalidate = 300;
+export const revalidate = 21600; // 6시간 — DB 컴퓨트 절약(발행 크론은 하루 1회)
 
 export const metadata: Metadata = buildMetadata({
   title: '트로트 공연·행사 일정',

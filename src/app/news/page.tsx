@@ -6,7 +6,7 @@ import { ArticleCard } from '@/components/cards';
 import { ARTICLE_TYPES, ARTICLE_TYPE_LABEL } from '@/lib/enums';
 import Link from 'next/link';
 
-export const revalidate = 300;
+export const revalidate = 21600; // 6시간 — DB 컴퓨트 절약(발행 크론은 하루 1회)
 
 export const metadata: Metadata = buildMetadata({
   title: '최신 트로트 소식 · 신곡·방송·공연·공식 발표',

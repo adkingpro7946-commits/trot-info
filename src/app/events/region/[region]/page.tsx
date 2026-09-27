@@ -6,7 +6,7 @@ import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { EventCard } from '@/components/cards';
 import { REGIONS, regionLabel } from '@/lib/enums';
 
-export const revalidate = 300;
+export const revalidate = 21600; // 6시간 — DB 컴퓨트 절약(발행 크론은 하루 1회)
 
 export async function generateStaticParams() {
   return REGIONS.filter((r) => r.slug !== 'other').map((r) => ({ region: r.slug }));
