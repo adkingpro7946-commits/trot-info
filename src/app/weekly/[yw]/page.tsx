@@ -18,6 +18,7 @@ export async function generateMetadata({ params }: { params: Promise<{ yw: strin
     title: `${parsed.year}년 ${parsed.week}주차 트로트 일정 정리`,
     description: `${formatDate(start)} ~ ${formatDate(new Date(end.getTime() - 86400000))} 트로트 공연·방송·신곡 일정을 한 주 단위로 정리했습니다.`,
     path: `/weekly/${yw}`,
+    index: false, // 템플릿형·얇은 페이지 noindex (애드센스 낮은 가치 대응, 2026-10-14)
   });
 }
 

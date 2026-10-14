@@ -27,16 +27,20 @@ export function Footer() {
           <div>
             <p className="font-bold text-ink-900">문의·정보</p>
             <ul className="mt-2 space-y-1">
+              <li><Link href="/guides" className="hover:text-brand-600">트로트 가이드</Link></li>
               <li><Link href="/about" className="hover:text-brand-600">사이트 소개·운영 원칙</Link></li>
               <li><Link href="/contact" className="hover:text-brand-600">문의하기</Link></li>
               <li><Link href="/corrections" className="hover:text-brand-600">정보 정정 요청</Link></li>
               <li><Link href="/privacy" className="hover:text-brand-600">개인정보처리방침</Link></li>
+              <li><Link href="/terms" className="hover:text-brand-600">이용약관</Link></li>
             </ul>
           </div>
         </div>
         <p className="mt-6 border-t border-slate-200 pt-4 text-xs text-slate-500">
           공연 일정·가격 등은 변동될 수 있으니 예매·관람 전 공식 채널에서 확인하시기 바랍니다.
-          각 정보의 출처와 마지막 확인일은 해당 페이지에 표기됩니다. © {SITE_NAME}
+          각 정보의 출처와 마지막 확인일은 해당 페이지에 표기됩니다.
+          <br />
+          운영: 글로벌 미디어스 · 대표 김호진 · 부산광역시 부산진구 · © {SITE_NAME}
         </p>
       </div>
     </footer>

@@ -15,6 +15,8 @@ import { parseSocialLinks } from '@/lib/json';
 import { formatDate } from '@/lib/format';
 import { renderMarkdown } from '@/lib/markdown';
 import { CoupangBanner } from '@/components/CoupangBanner';
+import { getArtistNote } from '@/content/artist-notes';
+import { EDITORIAL_AUTHOR } from '@/content/guides';
 
 export const revalidate = 21600; // 6시간 — DB 컴퓨트 절약(발행 크론은 하루 1회)
 
@@ -46,6 +48,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     title: `${artist.stageName} 프로필 · 대표곡·방송·공연 일정 정리`,
     description: artist.profileSummary.slice(0, 150),
     path: `/artists/${artist.slug}`,
+    // 편집부 해설이 있는 심층 프로필만 색인. 나머지는 본문이 짧아 noindex (2026-10-14)
+    index: !!getArtistNote(artist.slug),
     type: 'profile',
     keywords: [
       artist.stageName,
@@ -79,6 +83,7 @@ export default async function ArtistProfilePage({ params }: { params: Promise<{ 
   const nextEvent = artist.events.find((e) => e.startDateTime >= now && !['cancelled', 'completed'].includes(e.eventStatus));
   const latestMusic = artist.music[0];
   const latestArticle = artist.articles[0];
+  const note = getArtistNote(artist.slug);
 
   return (
     <div>
@@ -118,38 +123,63 @@ export default async function ArtistProfilePage({ params }: { params: Promise<{ 
       {/* 첫 화면: 3문장 핵심 소개 + 최근/다음 요약 (§4) */}
       <p className="mt-3 max-w-content leading-7 text-ink-800">{artist.profileSummary}</p>
 
-      <div className="mt-5 grid gap-3 sm:grid-cols-3">
-        <div className="rounded-lg border border-slate-200 p-3">
-          <p className="text-xs text-slate-500">다음 공연</p>
-          {nextEvent ? (
-            <Link href={`/events/${nextEvent.slug}`} className="mt-1 block text-sm font-semibold text-brand-700 hover:underline">
-              {formatDate(nextEvent.startDateTime)} · {nextEvent.eventName}
-            </Link>
-          ) : <p className="mt-1 text-sm text-slate-400">예정된 공개 일정 없음</p>}
+      {/* 요약 카드 — 값이 있는 항목만 표시(빈 박스 노출 방지) */}
+      {(nextEvent || latestMusic || latestArticle) && (
+        <div className="mt-5 grid gap-3 sm:grid-cols-3">
+          {nextEvent && (
+            <div className="rounded-lg border border-slate-200 p-3">
+              <p className="text-xs text-slate-500">다음 공연</p>
+              <Link href={`/events/${nextEvent.slug}`} className="mt-1 block text-sm font-semibold text-brand-700 hover:underline">
+                {formatDate(nextEvent.startDateTime)} · {nextEvent.eventName}
+              </Link>
+            </div>
+          )}
+          {latestMusic && (
+            <div className="rounded-lg border border-slate-200 p-3">
+              <p className="text-xs text-slate-500">최근 발매</p>
+              <Link href={`/music/${latestMusic.slug}`} className="mt-1 block text-sm font-semibold text-brand-700 hover:underline">
+                {latestMusic.title}
+              </Link>
+            </div>
+          )}
+          {latestArticle && (
+            <div className="rounded-lg border border-slate-200 p-3">
+              <p className="text-xs text-slate-500">최근 소식</p>
+              <Link href={`/news/${latestArticle.slug}`} className="mt-1 block text-sm font-semibold text-brand-700 hover:underline line-clamp-2">
+                {latestArticle.title}
+              </Link>
+            </div>
+          )}
         </div>
-        <div className="rounded-lg border border-slate-200 p-3">
-          <p className="text-xs text-slate-500">최근 발매</p>
-          {latestMusic ? (
-            <Link href={`/music/${latestMusic.slug}`} className="mt-1 block text-sm font-semibold text-brand-700 hover:underline">
-              {latestMusic.title}
-            </Link>
-          ) : <p className="mt-1 text-sm text-slate-400">등록된 음반 없음</p>}
-        </div>
-        <div className="rounded-lg border border-slate-200 p-3">
-          <p className="text-xs text-slate-500">최근 소식</p>
-          {latestArticle ? (
-            <Link href={`/news/${latestArticle.slug}`} className="mt-1 block text-sm font-semibold text-brand-700 hover:underline line-clamp-2">
-              {latestArticle.title}
-            </Link>
-          ) : <p className="mt-1 text-sm text-slate-400">등록된 소식 없음</p>}
-        </div>
-      </div>
+      )}
 
       {/* 인물 소개 — 검증된 사실 기반 심층 본문 */}
       {artist.bio && (
         <section className="mt-8">
           <h2 className="text-lg font-bold text-ink-900">인물 소개</h2>
           <div className="prose-trot mt-3 max-w-content" dangerouslySetInnerHTML={{ __html: renderMarkdown(artist.bio) }} />
+        </section>
+      )}
+
+      {/* 편집부 해설 — 커리어 분석·대표곡 해설·감상 가이드 (정적 편집 콘텐츠) */}
+      {note && (
+        <section className="mt-8">
+          <h2 className="text-lg font-bold text-ink-900">편집부 해설: {artist.stageName}의 음악 읽기</h2>
+          <p className="mt-1 text-xs text-slate-500">
+            글 <Link href="/about" className="underline hover:text-brand-600">{EDITORIAL_AUTHOR}</Link> · 작성 {note.updatedAt.replace(/-/g, '.')}
+          </p>
+          <div className="prose-trot mt-3 max-w-content" dangerouslySetInnerHTML={{ __html: renderMarkdown(note.body) }} />
+          {note.references && note.references.length > 0 && (
+            <p className="mt-3 text-xs text-slate-500">
+              참고:{' '}
+              {note.references.map((r, i) => (
+                <span key={r.title + i}>
+                  {i > 0 && ' · '}
+                  {r.url ? <a href={r.url} target="_blank" rel="noopener noreferrer nofollow" className="underline">{r.title}</a> : r.title} ({r.publisher})
+                </span>
+              ))}
+            </p>
+          )}
         </section>
       )}
 

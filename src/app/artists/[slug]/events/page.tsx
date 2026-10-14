@@ -23,6 +23,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     title: `${a.stageName} 공연·행사 일정`,
     description: `${a.stageName}의 공연·행사 일정을 공식 출처 기반으로 정리했습니다. 일정은 변경될 수 있습니다.`,
     path: `/artists/${a.slug}/events`,
+    index: false, // 템플릿형·얇은 페이지 noindex (애드센스 낮은 가치 대응, 2026-10-14)
   });
 }
 

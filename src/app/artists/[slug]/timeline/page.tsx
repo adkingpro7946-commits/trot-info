@@ -23,6 +23,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     title: `${a.stageName} 데뷔부터 현재까지 주요 활동 연대기`,
     description: `${a.stageName}의 데뷔·활동·발매·공연을 시간순으로 정리한 연대기.`,
     path: `/artists/${a.slug}/timeline`,
+    index: false, // 템플릿형·얇은 페이지 noindex (애드센스 낮은 가치 대응, 2026-10-14)
   });
 }
 

@@ -21,6 +21,7 @@ export async function generateMetadata({ params }: { params: Promise<{ region: s
     title: `${label} 트로트 공연 일정 정리`,
     description: `${label} 지역에서 열리는 트로트 콘서트·행사 일정을 공식 출처 기반으로 정리했습니다.`,
     path: `/events/region/${region}`,
+    index: false, // 템플릿형·얇은 페이지 noindex (애드센스 낮은 가치 대응, 2026-10-14)
   });
 }
 

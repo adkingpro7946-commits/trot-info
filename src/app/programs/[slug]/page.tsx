@@ -36,6 +36,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     title: `${p.name} 출연진·방송 정보`,
     description: p.description ?? `${p.name} 출연진과 방송 정보를 정리했습니다.`,
     path: `/programs/${p.slug}`,
+    index: false, // 템플릿형·얇은 페이지 noindex (애드센스 낮은 가치 대응, 2026-10-14)
   });
 }
 

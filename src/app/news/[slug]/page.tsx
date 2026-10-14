@@ -14,6 +14,7 @@ import { CoupangBanner } from '@/components/CoupangBanner';
 import { parseArray } from '@/lib/json';
 import { ARTICLE_TYPE_LABEL } from '@/lib/enums';
 import { formatDate, formatDateTime } from '@/lib/format';
+import { NOINDEX_NEWS_SLUGS } from '@/content/noindex';
 
 export const revalidate = 21600; // 6시간 — DB 컴퓨트 절약(발행 크론은 하루 1회)
 
@@ -48,7 +49,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     title: a.seoTitle || a.title,
     description: a.description,
     path: `/news/${a.slug}`,
-    index: a.index,
+    index: a.index && !NOINDEX_NEWS_SLUGS.has(a.slug),
     image: a.heroImage,
     imageAlt: a.heroImageAlt,
     type: 'article',

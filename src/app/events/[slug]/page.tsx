@@ -46,6 +46,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     title: `${e.eventName} 날짜·장소·예매 정보`,
     description: `${e.eventName} — ${formatDate(e.startDateTime)}${e.venue ? ` · ${e.venue}` : ''}. 공식 출처 기반 안내. 일정은 변경될 수 있습니다.`,
     path: `/events/${e.slug}`,
+    index: false, // 템플릿형·얇은 페이지 noindex (애드센스 낮은 가치 대응, 2026-10-14)
     image: concertImage(e.slug),
     keywords: [
       e.eventName,

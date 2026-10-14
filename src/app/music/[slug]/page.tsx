@@ -48,6 +48,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     title: `${m.title} 발매일·수록곡 정보`,
     description: m.description ?? `${m.title} 발매 정보와 수록곡 안내.`,
     path: `/music/${m.slug}`,
+    index: false, // 템플릿형·얇은 페이지 noindex (애드센스 낮은 가치 대응, 2026-10-14)
   });
 }
 

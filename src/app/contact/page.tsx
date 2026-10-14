@@ -48,6 +48,14 @@ export default function ContactPage() {
           <Link href="/corrections">문의 페이지</Link>를 통해 접수하실 수 있습니다.
         </p>
 
+        <h2>운영자 정보</h2>
+        <ul>
+          <li>사이트명: {SITE_NAME} (trotpick.co.kr)</li>
+          <li>운영: 글로벌 미디어스 (대표 김호진)</li>
+          <li>소재지: 부산광역시 부산진구</li>
+          <li>접수 창구: <Link href="/corrections">문의·정정 요청 양식</Link> (회신을 원하시면 양식에 이메일을 남겨 주세요)</li>
+        </ul>
+
         <p className="text-sm text-slate-500">
           ※ 접수하신 문의 내용과 (선택 입력하신) 회신용 연락처는 문의 처리 목적으로만 사용되며, 처리 완료 후 파기됩니다.
         </p>

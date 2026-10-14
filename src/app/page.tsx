@@ -5,6 +5,7 @@ import { ArticleCard, EventCard, ArtistCard, ArtistAvatarLink } from '@/componen
 import { REGIONS } from '@/lib/enums';
 import { HOME_HERO_IMAGE } from '@/lib/seo';
 import { formatDate } from '@/lib/format';
+import { GUIDES, readingMinutes } from '@/content/guides';
 
 // 홈도 ISR: 매 요청 DB 조회가 Neon 무료 컴퓨트(월 100시간)를 소진해 사이트가 멈췄음(2026-09). DB 장애 시에도 마지막 정상 페이지 유지.
 export const revalidate = 3600;
@@ -118,6 +119,29 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* 편집부 오리지널 가이드 (정적 콘텐츠) */}
+      <section className="mt-8">
+        <div className="mb-3 flex items-baseline justify-between">
+          <h2 className="text-lg font-bold text-ink-900">편집부 트로트 가이드</h2>
+          <Link href="/guides" className="text-sm text-brand-600 hover:underline">전체 {GUIDES.length}편 보기</Link>
+        </div>
+        <p className="mb-3 text-sm leading-6 text-ink-700">
+          시대별 명곡, 꺾기와 ‘쿵짝’ 리듬, 경연 프로그램 심사 방식, 콘서트 예매 요령까지 — 트로트를 더 깊이 즐기기 위한 해설을 편집부가 직접 썼습니다.
+        </p>
+        <ul className="grid gap-3 md:grid-cols-3">
+          {GUIDES.slice(0, 6).map((g) => (
+            <li key={g.slug} className="rounded-xl border border-slate-200 p-4 hover:border-brand-300">
+              <Link href={`/guides/${g.slug}`} className="block">
+                <span className="text-xs font-semibold text-brand-600">{g.category}</span>
+                <span className="mt-1 block font-bold text-ink-900">{g.title}</span>
+                <span className="mt-1 block text-sm text-ink-700 line-clamp-2">{g.description}</span>
+                <span className="mt-2 block text-xs text-slate-500">읽는 시간 약 {readingMinutes(g.body)}분</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </section>
+
       {/* 가수 둘러보기 (아바타 스트립) */}
       {artistStrip.length > 0 && (
         <section className="mt-8">
@@ -131,18 +155,14 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* 2. 오늘의 주요 일정 */}
-      <Section title={`오늘의 주요 일정 · ${formatDate(now)}`} href="/events">
-        {todayEvents.length ? (
+      {/* 2. 오늘의 주요 일정 — 있을 때만 */}
+      {todayEvents.length > 0 && (
+        <Section title={`오늘의 주요 일정 · ${formatDate(now)}`} href="/events">
           <div className="grid gap-3 md:grid-cols-2">
             {todayEvents.map((e) => <EventCard key={e.id} event={e} />)}
           </div>
-        ) : (
-          <p className="rounded-lg border border-dashed border-slate-300 p-4 text-sm text-slate-500">
-            오늘로 등록된 공개 일정이 없습니다. 다가오는 공연을 확인하세요.
-          </p>
-        )}
-      </Section>
+        </Section>
+      )}
 
       {/* 3. 오늘 업데이트된 소식 */}
       <Section title={todayNews.length ? '오늘 업데이트된 트로트 소식' : '최신 트로트 소식'} href="/news">
@@ -152,11 +172,13 @@ export default async function HomePage() {
       </Section>
 
       {/* 4. 다가오는 공연 */}
-      <Section title="다가오는 공연" href="/events">
-        <div className="grid gap-3 md:grid-cols-2">
-          {upcomingEvents.map((e) => <EventCard key={e.id} event={e} />)}
-        </div>
-      </Section>
+      {upcomingEvents.length > 0 && (
+        <Section title="다가오는 공연" href="/events">
+          <div className="grid gap-3 md:grid-cols-2">
+            {upcomingEvents.map((e) => <EventCard key={e.id} event={e} />)}
+          </div>
+        </Section>
+      )}
 
       {/* 5. 방송 출연 일정 */}
       {broadcasts.length > 0 && (

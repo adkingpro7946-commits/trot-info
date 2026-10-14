@@ -25,6 +25,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     title: `${a.stageName} 음반·디스코그래피 정리`,
     description: `${a.stageName}의 발매 음반과 대표곡을 정리했습니다.`,
     path: `/artists/${a.slug}/discography`,
+    index: false, // 템플릿형·얇은 페이지 noindex (애드센스 낮은 가치 대응, 2026-10-14)
   });
 }
 
