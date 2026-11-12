@@ -2,13 +2,13 @@ import Link from 'next/link';
 import { SITE_NAME } from '@/lib/seo';
 
 const NAV = [
+  { href: '/starter-course', label: '입문 코스' },
   { href: '/guides', label: '트로트 가이드' },
   { href: '/artists', label: '가수' },
   { href: '/news', label: '최신 소식' },
   { href: '/events', label: '공연 일정' },
   { href: '/broadcasts', label: '방송 일정' },
   { href: '/music', label: '신곡·앨범' },
-  { href: '/about', label: '소개' },
 ];
 
 export function Header() {

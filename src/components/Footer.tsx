@@ -27,7 +27,9 @@ export function Footer() {
           <div>
             <p className="font-bold text-ink-900">문의·정보</p>
             <ul className="mt-2 space-y-1">
+              <li><Link href="/starter-course" className="hover:text-brand-600">취향별 입문 코스</Link></li>
               <li><Link href="/guides" className="hover:text-brand-600">트로트 가이드</Link></li>
+              <li><Link href="/editorial-log" className="hover:text-brand-600">편집 활동 기록</Link></li>
               <li><Link href="/about" className="hover:text-brand-600">사이트 소개·운영 원칙</Link></li>
               <li><Link href="/contact" className="hover:text-brand-600">문의하기</Link></li>
               <li><Link href="/corrections" className="hover:text-brand-600">정보 정정 요청</Link></li>

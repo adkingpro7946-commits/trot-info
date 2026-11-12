@@ -19,6 +19,7 @@ export async function staticUrls(): Promise<UrlEntry[]> {
   // 대신 정적 편집 가이드(DB 미사용)를 포함한다.
   return [
     { loc: abs('/'), changefreq: 'daily', priority: 1 },
+    { loc: abs('/starter-course'), changefreq: 'monthly', priority: 0.9 },
     { loc: abs('/guides'), changefreq: 'weekly', priority: 0.9 },
     ...GUIDES.map((g) => ({
       loc: abs(`/guides/${g.slug}`),
@@ -32,6 +33,7 @@ export async function staticUrls(): Promise<UrlEntry[]> {
     { loc: abs('/broadcasts'), changefreq: 'weekly', priority: 0.5 },
     { loc: abs('/music'), changefreq: 'monthly', priority: 0.5 },
     { loc: abs('/about'), changefreq: 'monthly', priority: 0.4 },
+    { loc: abs('/editorial-log'), changefreq: 'monthly', priority: 0.5 },
     { loc: abs('/contact'), changefreq: 'yearly', priority: 0.3 },
     { loc: abs('/privacy'), changefreq: 'yearly', priority: 0.2 },
     { loc: abs('/terms'), changefreq: 'yearly', priority: 0.2 },

@@ -6,6 +6,7 @@ import { REGIONS } from '@/lib/enums';
 import { HOME_HERO_IMAGE } from '@/lib/seo';
 import { formatDate } from '@/lib/format';
 import { GUIDES, readingMinutes } from '@/content/guides';
+import { EDITORIAL_LOG } from '@/content/editorial-log';
 
 // 홈도 ISR: 매 요청 DB 조회가 Neon 무료 컴퓨트(월 100시간)를 소진해 사이트가 멈췄음(2026-09). DB 장애 시에도 마지막 정상 페이지 유지.
 export const revalidate = 3600;
@@ -112,11 +113,26 @@ export default async function HomePage() {
             <SearchBox size="lg" />
           </div>
           <div className="mt-4 flex flex-wrap gap-2 text-sm">
+            <Link href="/starter-course" className="rounded-full bg-white px-3 py-1.5 font-semibold text-brand-800 transition hover:bg-brand-50">내 입문 코스 만들기</Link>
             <Link href="/events" className="rounded-full bg-white/15 px-3 py-1.5 font-medium text-white ring-1 ring-white/30 backdrop-blur transition hover:bg-white/25">오늘의 트로트 일정</Link>
             <Link href="/artists" className="rounded-full bg-white/15 px-3 py-1.5 font-medium text-white ring-1 ring-white/30 backdrop-blur transition hover:bg-white/25">가수 이름으로 찾기</Link>
             <Link href="/events" className="rounded-full bg-white/15 px-3 py-1.5 font-medium text-white ring-1 ring-white/30 backdrop-blur transition hover:bg-white/25">지역별 공연 찾기</Link>
           </div>
         </div>
+      </section>
+
+      <section className="mt-8 grid gap-4 rounded-2xl border border-brand-200 bg-brand-50/50 p-5 md:grid-cols-[1fr_auto] md:items-center">
+        <div>
+          <p className="text-sm font-semibold text-brand-700">취향으로 찾는 첫 번째 길</p>
+          <h2 className="mt-1 text-xl font-extrabold text-ink-900">나에게 맞는 트로트 입문 코스 만들기</h2>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-ink-700">
+            분위기, 즐기는 방식, 시대, 익숙한 정도를 고르면 17개 장문 가이드와 주요 가수 해설을 4단계 읽기 순서로 묶어 드립니다.
+            인기 순위나 광고가 아니라 선택한 조건만 사용합니다.
+          </p>
+        </div>
+        <Link href="/starter-course" className="inline-flex justify-center rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-brand-700">
+          코스 만들기
+        </Link>
       </section>
 
       {/* 편집부 오리지널 가이드 (정적 콘텐츠) */}
@@ -247,6 +263,14 @@ export default async function HomePage() {
           <li className="rounded-lg bg-slate-50 p-3">각 콘텐츠 하단에 출처와 마지막 확인일을 표기합니다.</li>
           <li className="rounded-lg bg-slate-50 p-3">티켓을 직접 판매하지 않으며, 가격·잔여 좌석은 실시간이 아닐 수 있습니다.</li>
         </ul>
+      </Section>
+
+      <Section title="최근 편집 활동" href="/editorial-log">
+        <div className="rounded-xl border border-slate-200 p-4">
+          <p className="text-xs font-semibold text-brand-600">{EDITORIAL_LOG[0].date.replace(/-/g, '.')}</p>
+          <h3 className="mt-1 font-bold text-ink-900">{EDITORIAL_LOG[0].title}</h3>
+          <p className="mt-2 text-sm leading-6 text-ink-700">{EDITORIAL_LOG[0].summary}</p>
+        </div>
       </Section>
 
       {/* 12. 정정 요청·문의 */}
